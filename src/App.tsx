@@ -188,7 +188,7 @@ function App() {
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-white">3. Get Your Design</h3>
                 <p className="text-white/80 leading-relaxed">
-                  Receive production-ready hardware designs and schematics ready for manufacturing.
+                  Receive funtionally correct hardware designs and schematics ready for manufacturing.
                 </p>
               </div>
             </div>
