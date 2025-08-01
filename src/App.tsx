@@ -112,7 +112,7 @@ function App() {
                   <span className="text-4xl md:text-6xl text-white">Design.</span>
                 </h1>
                 <p className="text-xl md:text-2xl text-white/90 max-w-2xl mb-12 leading-relaxed">
-                  Describe your hardware vision in plain English. ConfigAI transforms it into production-ready designs. 
+                  Describe your hardware vision in plain English. ConfigAI transforms it into RTL designs. 
                   Perfect for processors and embedded systems.
                 </p>
               </div>
