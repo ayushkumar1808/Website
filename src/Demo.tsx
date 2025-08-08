@@ -1,82 +1,69 @@
-import React, { useState } from 'react';
-
-const mockVerilogCode = `// 4-bit Synchronous Counter
-module counter_4bit (
-    input clk,
-    input rst,
-    output reg [3:0] out
-);
-
-always @(posedge clk or posedge rst)
-begin
-    if (rst)
-        out <= 4'b0000;
-    else
-        out <= out + 1;
-end
-
-endmodule`;
-
-const mockTestbench = `// Testbench for 4-bit Counter
-module testbench;
-    reg clk = 0;
-    reg rst = 1;
-    wire [3:0] out;
-
-    counter_4bit uut (
-        .clk(clk),
-        .rst(rst),
-        .out(out)
-    );
-
-    always #5 clk = ~clk;
-
-    initial begin
-        $monitor("Time: %t | Output: %d", $time, out);
-        
-        #10 rst = 0;
-        #200 $finish;
-    end
-
-endmodule`;
-
-const mockSimulation = `Time: 0 | Output: x
-Time: 10 | Output: 0
-Time: 20 | Output: 1
-Time: 30 | Output: 2
-Time: 40 | Output: 3
-Time: 50 | Output: 4
-Time: 60 | Output: 5
-Time: 70 | Output: 6
-Time: 80 | Output: 7
-Time: 90 | Output: 8
-Time: 100 | Output: 9
-Time: 110 | Output: 10
-Time: 120 | Output: 11
-Time: 130 | Output: 12
-Time: 140 | Output: 13
-Time: 150 | Output: 14
-Time: 160 | Output: 15
-Time: 170 | Output: 0
-...`;
+import React, { useState, useRef, useEffect } from 'react';
 
 function Demo() {
-  const [currentPage, setCurrentPage] = useState('prompt'); // Only 'prompt', 'loading', 'results'
+  const [currentPage, setCurrentPage] = useState<'prompt' | 'loading' | 'waiting' | 'results'>('prompt');
   const [spec, setSpec] = useState('');
+  const [verilog, setVerilog] = useState('');
+  const [testbench, setTestbench] = useState('');
+  const [simOutput, setSimOutput] = useState('');
+  const [error, setError] = useState('');
+  const [waitSeconds, setWaitSeconds] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSubmit = () => {
+  // Handle timer for long waits
+  useEffect(() => {
+    if (currentPage === 'loading') {
+      setWaitSeconds(0);
+      timerRef.current = setInterval(() => {
+        setWaitSeconds((s) => s + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (waitSeconds >= 30 && currentPage === 'loading') {
+      setCurrentPage('waiting');
+    }
+  }, [waitSeconds, currentPage]);
+
+  const handleSubmit = async () => {
     if (!spec.trim()) return;
     setCurrentPage('loading');
-    
-    // Simulate processing time
-    setTimeout(() => {
+    setError('');
+    setVerilog('');
+    setTestbench('');
+    setSimOutput('');
+    try {
+      const res = await fetch('https://veridev-production.up.railway.app/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spec }),
+      });
+      if (!res.ok) throw new Error('Failed to generate hardware.');
+      const data = await res.json();
+      setVerilog(data.rtl || '');
+      setTestbench(data.testbench || '');
+      setSimOutput(data.sim_output || '');
       setCurrentPage('results');
-    }, 3000);
+    } catch (err) {
+      setError('Failed to generate hardware. Please try again.');
+      setCurrentPage('prompt');
+    }
   };
 
   const handleReset = () => {
     setCurrentPage('prompt');
     setSpec('');
+    setVerilog('');
+    setTestbench('');
+    setSimOutput('');
+    setError('');
+    setWaitSeconds(0);
   };
 
   // Prompt Page
@@ -97,6 +84,10 @@ function Demo() {
               placeholder="e.g., A 4-bit counter with synchronous reset and enable signal"
               className="w-full h-40 p-4 text-white bg-black border border-white/30 rounded-lg resize-none focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 placeholder-gray-400"
             />
+
+            {error && (
+              <div className="text-red-400 text-center mb-4">{error}</div>
+            )}
 
             <div className="flex justify-center">
               <button
@@ -122,7 +113,7 @@ function Demo() {
     );
   }
 
-  // Loading Page
+  // Loading Page (first 30 seconds)
   if (currentPage === 'loading') {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -134,6 +125,8 @@ function Demo() {
             <div className="loader"></div>
           </div>
           <p className="text-gray-400 text-lg">Transforming your idea into RTL</p>
+          <p className="text-gray-500 text-sm">Elapsed: {waitSeconds}s</p>
+          <p className="text-gray-500 text-xs">If this takes more than 30 seconds, please wait. Some requests may take up to 5 minutes.</p>
         </div>
         <style jsx>{`
           .loader {
@@ -152,7 +145,45 @@ function Demo() {
     );
   }
 
-  // Results Page - matching the HTML design exactly
+  // Waiting Page (after 30 seconds)
+  if (currentPage === 'waiting') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center space-y-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+            Still Working...
+          </h2>
+          <div className="flex justify-center">
+            <div className="loader-wait"></div>
+          </div>
+          <p className="text-gray-400 text-lg">This request is taking longer than usual.</p>
+          <p className="text-gray-500 text-sm">Elapsed: {waitSeconds}s</p>
+          <p className="text-gray-500 text-xs">Some hardware generations may take up to 5 minutes.<br />Please keep this window open.</p>
+          <button
+            onClick={handleReset}
+            className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
+          >
+            Cancel and Start Over
+          </button>
+        </div>
+        <style jsx>{`
+          .loader-wait {
+            width: 32px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 4px solid #f59e42;
+            border-top: 4px solid #222;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Results Page
   return (
     <div className="min-h-screen bg-black text-white font-mono overflow-x-hidden">
       <div className="absolute inset-0 opacity-5 bg-grid-pattern pointer-events-none"></div>
@@ -164,7 +195,7 @@ function Demo() {
             <span>✓</span>
             <span>Generation Complete</span>
           </div>
-          <h1 className="text-3xl font-semibold mb-2 text-white">4-bit Counter Implementation</h1>
+          <h1 className="text-3xl font-semibold mb-2 text-white">Hardware Implementation</h1>
           <button
             onClick={handleReset}
             className="text-sm text-gray-400 hover:text-white transition-colors underline"
@@ -186,7 +217,12 @@ function Demo() {
                   </div>
                   <span className="text-lg font-semibold">Verilog Code</span>
                 </div>
-                <button className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center">
+                <button className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center"
+                  onClick={() => {
+                    navigator.clipboard.writeText(verilog);
+                  }}
+                  title="Copy Verilog"
+                >
                   📋
                 </button>
               </div>
@@ -194,22 +230,7 @@ function Demo() {
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-black/30 border border-white/10 border-l-4 border-l-cyan-400 rounded-lg p-6">
                 <pre className="text-sm leading-relaxed whitespace-pre-wrap">
-                  <span className="text-gray-500">// 4-bit Synchronous Counter</span>
-                  {'\n'}<span className="text-pink-400">module</span> counter_4bit (
-                  {'\n'}    <span className="text-pink-400">input</span> clk,
-                  {'\n'}    <span className="text-pink-400">input</span> rst,
-                  {'\n'}    <span className="text-pink-400">output</span> <span className="text-pink-400">reg</span> [3:0] out
-                  {'\n'});
-                  {'\n'}
-                  {'\n'}<span className="text-pink-400">always</span> @(<span className="text-pink-400">posedge</span> clk <span className="text-pink-400">or</span> <span className="text-pink-400">posedge</span> rst)
-                  {'\n'}<span className="text-pink-400">begin</span>
-                  {'\n'}    <span className="text-pink-400">if</span> (rst)
-                  {'\n'}        out {'<='} <span className="text-purple-400">4'b0000</span>;
-                  {'\n'}    <span className="text-pink-400">else</span>
-                  {'\n'}        out {'<='} out + <span className="text-purple-400">1</span>;
-                  {'\n'}<span className="text-pink-400">end</span>
-                  {'\n'}
-                  {'\n'}<span className="text-pink-400">endmodule</span>
+                  {verilog || '// No Verilog code generated.'}
                 </pre>
               </div>
             </div>
@@ -226,7 +247,12 @@ function Demo() {
                   </div>
                   <span className="text-lg font-semibold">Testbench</span>
                 </div>
-                <button className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center">
+                <button className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center"
+                  onClick={() => {
+                    navigator.clipboard.writeText(testbench);
+                  }}
+                  title="Copy Testbench"
+                >
                   📋
                 </button>
               </div>
@@ -234,28 +260,7 @@ function Demo() {
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-black/30 border border-white/10 border-l-4 border-l-purple-500 rounded-lg p-6">
                 <pre className="text-sm leading-relaxed whitespace-pre-wrap">
-                  <span className="text-gray-500">// Testbench for 4-bit Counter</span>
-                  {'\n'}<span className="text-pink-400">module</span> testbench;
-                  {'\n'}    <span className="text-pink-400">reg</span> clk = <span className="text-purple-400">0</span>;
-                  {'\n'}    <span className="text-pink-400">reg</span> rst = <span className="text-purple-400">1</span>;
-                  {'\n'}    <span className="text-pink-400">wire</span> [3:0] out;
-                  {'\n'}
-                  {'\n'}    counter_4bit uut (
-                  {'\n'}        .clk(clk),
-                  {'\n'}        .rst(rst),
-                  {'\n'}        .out(out)
-                  {'\n'}    );
-                  {'\n'}
-                  {'\n'}    <span className="text-pink-400">always</span> #<span className="text-purple-400">5</span> clk = ~clk;
-                  {'\n'}
-                  {'\n'}    <span className="text-pink-400">initial</span> <span className="text-pink-400">begin</span>
-                  {'\n'}        <span className="text-yellow-300">$monitor("Time: %t | Output: %d", $time, out);</span>
-                  {'\n'}        
-                  {'\n'}        #<span className="text-purple-400">10</span> rst = <span className="text-purple-400">0</span>;
-                  {'\n'}        #<span className="text-purple-400">200</span> <span className="text-yellow-300">$finish;</span>
-                  {'\n'}    <span className="text-pink-400">end</span>
-                  {'\n'}
-                  {'\n'}<span className="text-pink-400">endmodule</span>
+                  {testbench || '// No testbench generated.'}
                 </pre>
               </div>
             </div>
@@ -272,7 +277,12 @@ function Demo() {
                   </div>
                   <span className="text-lg font-semibold">Simulation Output</span>
                 </div>
-                <button className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center">
+                <button className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center"
+                  onClick={() => {
+                    navigator.clipboard.writeText(simOutput);
+                  }}
+                  title="Copy Output"
+                >
                   📋
                 </button>
               </div>
@@ -280,23 +290,11 @@ function Demo() {
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-black/50 border border-orange-500/30 border-l-4 border-l-orange-500 rounded-lg p-6">
                 <pre className="text-sm leading-relaxed font-mono">
-                  {mockSimulation.split('\n').map((line, index) => {
-                    if (line.includes('Time:')) {
-                      const parts = line.split(' | ');
-                      return (
-                        <div key={index} className="py-1 border-b border-white/[0.03] last:border-b-0">
-                          <span className="text-green-400">{parts[0]}</span>
-                          {parts[1] && (
-                            <>
-                              <span className="text-white"> | Output: </span>
-                              <span className="text-yellow-400">{parts[1].split(': ')[1]}</span>
-                            </>
-                          )}
-                        </div>
-                      );
-                    }
-                    return <div key={index} className="py-1">{line}</div>;
-                  })}
+                  {simOutput
+                    ? simOutput.split('\n').map((line, index) => (
+                        <div key={index} className="py-1">{line}</div>
+                      ))
+                    : '// No simulation output.'}
                 </pre>
               </div>
             </div>
