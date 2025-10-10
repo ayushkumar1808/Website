@@ -267,6 +267,35 @@ function LandingPage() {
               </div>
             </div>
 
+            {/* Benchmark Comparison */}
+            <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-cyan-400/30 mb-8">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-black" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Outperforming GPT-4o</h3>
+              </div>
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <p className="text-white/90 text-lg mb-4">
+                    Our Spec-2-RTL system achieves <span className="text-cyan-400 font-bold">83% functional correctness</span>,
+                    significantly outperforming GPT-4o's 50% on hardware design tasks.
+                  </p>
+                  <p className="text-white/80 leading-relaxed">
+                    This breakthrough demonstrates our compiler's ability to understand natural language specifications
+                    and generate production-ready RTL code with exceptional reliability.
+                  </p>
+                </div>
+                <div className="relative rounded-2xl overflow-hidden border border-white/20 bg-white p-6">
+                  <img
+                    src="/ConfigAI-benchmark.png"
+                    alt="ConfigAI vs GPT-4o Benchmark Comparison"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Demo Video */}
             <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10 mb-8">
               <div className="flex items-center space-x-3 mb-6">
@@ -275,11 +304,11 @@ function LandingPage() {
                 </div>
                 <h3 className="text-2xl font-bold text-white">See It In Action</h3>
               </div>
-              <div className="relative rounded-2xl overflow-hidden border border-white/20">
+              <div className="relative rounded-2xl overflow-hidden border border-white/20 bg-black">
                 <video
                   controls
                   className="w-full h-auto"
-                  poster="/image.png"
+                  preload="metadata"
                 >
                   <source src="/Demo.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
