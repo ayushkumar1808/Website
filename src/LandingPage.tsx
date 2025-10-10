@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, 
   Check, 
-  Github, 
-  Mail, 
-  FileText, 
+  Github,
+  Mail,
+  FileText,
   Shield,
   Sparkles,
   Timer,
@@ -13,7 +13,11 @@ import {
   Layers,
   Cpu,
   Code,
-  Zap
+  Zap,
+  Linkedin,
+  Target,
+  TrendingUp,
+  Play
 } from 'lucide-react';
 
 function LandingPage() {
@@ -92,7 +96,8 @@ function LandingPage() {
             </div>
             <nav className="hidden md:flex space-x-8">
               <a href="#how-it-works" className="text-white/80 hover:text-cyan-400 transition-colors duration-300">How it Works</a>
-              <a href="#use-cases" className="text-white/80 hover:text-cyan-400 transition-colors duration-300">Use Cases</a>
+              <a href="#product" className="text-white/80 hover:text-cyan-400 transition-colors duration-300">Product</a>
+              <a href="#about" className="text-white/80 hover:text-cyan-400 transition-colors duration-300">Team</a>
               <a href="#waitlist" className="text-white/80 hover:text-cyan-400 transition-colors duration-300">Join Waitlist</a>
             </nav>
           </div>
@@ -196,6 +201,236 @@ function LandingPage() {
                 <p className="text-white/80 leading-relaxed">
                   Receive funtionally correct hardware designs and schematics ready for manufacturing.
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Product Section */}
+        <section id="product" className="px-4 py-20 bg-gradient-to-b from-black via-gray-900/50 to-black">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16 backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Our Product</h2>
+              <p className="text-xl text-white/90 max-w-3xl mx-auto">
+                A revolutionary compiler that brings FPGA acceleration to every engineer
+              </p>
+            </div>
+
+            {/* The Problem */}
+            <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10 mb-8">
+              <div className="flex items-start space-x-4 mb-6">
+                <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-6 h-6 text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-4 text-white">The Challenge</h3>
+                  <p className="text-white/80 leading-relaxed mb-4">
+                    Moore's Law is effectively dead. We no longer get performance boosts just by waiting for smaller transistors.
+                    The next leap in compute performance will come from reconfigurable hardware, especially FPGAs, which strike a balance
+                    between flexibility, performance density, and power efficiency.
+                  </p>
+                  <p className="text-white/80 leading-relaxed">
+                    FPGAs can deliver up to <span className="text-cyan-400 font-bold">100× speedups</span>, but they're notoriously hard to program.
+                    HDL design is tedious, time-consuming, and fundamentally different from the way software engineers think.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Our Solution */}
+            <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-cyan-400/30 mb-8">
+              <div className="flex items-start space-x-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-6 h-6 text-black" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-4 text-white">Our Solution</h3>
+                  <p className="text-white/80 leading-relaxed mb-4">
+                    We're building a compiler that <span className="text-cyan-400 font-bold">automatically maps any PyTorch model onto an FPGA</span>,
+                    eliminating the need for hardware expertise and making FPGA acceleration accessible to every engineer.
+                  </p>
+                  <div className="grid md:grid-cols-3 gap-4 mt-6">
+                    <div className="bg-black/50 rounded-xl p-4 border border-cyan-400/20">
+                      <div className="text-3xl font-bold text-cyan-400 mb-2">100×</div>
+                      <div className="text-white/70">Performance Speedup</div>
+                    </div>
+                    <div className="bg-black/50 rounded-xl p-4 border border-cyan-400/20">
+                      <div className="text-3xl font-bold text-cyan-400 mb-2">Zero</div>
+                      <div className="text-white/70">Hardware Expertise</div>
+                    </div>
+                    <div className="bg-black/50 rounded-xl p-4 border border-cyan-400/20">
+                      <div className="text-3xl font-bold text-cyan-400 mb-2">PyTorch</div>
+                      <div className="text-white/70">Native Integration</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Demo Video */}
+            <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10 mb-8">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
+                  <Play className="w-6 h-6 text-black" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">See It In Action</h3>
+              </div>
+              <div className="relative rounded-2xl overflow-hidden border border-white/20">
+                <video
+                  controls
+                  className="w-full h-auto"
+                  poster="/public/image.png"
+                >
+                  <source src="/Demo.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <p className="text-white/70 text-center mt-4">
+                Watch our proof of concept demonstrating PyTorch to FPGA compilation
+              </p>
+            </div>
+
+            {/* Target Market */}
+            <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10 mb-8">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Target className="w-6 h-6 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-4 text-white">Who We Serve</h3>
+                  <p className="text-white/80 leading-relaxed mb-4">
+                    Our typical customers are <span className="text-purple-400 font-bold">hyperscalers and cloud providers</span> (AWS, Azure, Google Cloud)
+                    that already offer FPGA instances but struggle with low adoption due to the complexity of HDL design.
+                  </p>
+                  <p className="text-white/80 leading-relaxed mb-4">
+                    Our compiler makes FPGAs accessible to a much broader developer base, which directly increases utilization of their existing FPGA infrastructure.
+                  </p>
+                  <p className="text-white/80 leading-relaxed">
+                    Longer term, <span className="text-purple-400 font-bold">enterprise AI teams and startups</span> will also benefit from faster,
+                    cheaper inference without hiring specialized hardware engineers.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Current Stage */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="backdrop-blur-md bg-black/50 rounded-2xl p-6 border border-cyan-400/30 text-center">
+                <div className="text-lg font-bold text-cyan-400 mb-2">Current Stage</div>
+                <div className="text-2xl font-bold text-white">MVP Development</div>
+                <p className="text-white/70 mt-2">Building on our successful PoC</p>
+              </div>
+              <div className="backdrop-blur-md bg-black/50 rounded-2xl p-6 border border-purple-400/30 text-center">
+                <div className="text-lg font-bold text-purple-400 mb-2">Market Size</div>
+                <div className="text-2xl font-bold text-white">Tens of Billions</div>
+                <p className="text-white/70 mt-2">AI acceleration market globally</p>
+              </div>
+              <div className="backdrop-blur-md bg-black/50 rounded-2xl p-6 border border-blue-400/30 text-center">
+                <div className="text-lg font-bold text-blue-400 mb-2">Next Milestone</div>
+                <div className="text-2xl font-bold text-white">Hyperscaler Launch</div>
+                <p className="text-white/70 mt-2">Deploying on major cloud platforms</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section id="about" className="px-4 py-20">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16 backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Meet Our Team</h2>
+              <p className="text-xl text-white/90 max-w-3xl mx-auto">
+                World-class researchers and engineers from Max Planck Institute for Informatics
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {/* Ayush Kumar */}
+              <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 transform hover:scale-105">
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <img
+                      src="/Ayush.png"
+                      alt="Ayush Kumar"
+                      className="w-40 h-40 rounded-full object-cover border-4 border-cyan-400/30"
+                    />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 blur-xl opacity-20"></div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Ayush Kumar</h3>
+                  <div className="text-cyan-400 font-semibold mb-4">CEO & Co-Founder</div>
+                  <p className="text-white/80 leading-relaxed mb-6">
+                    Ayush brings deep expertise in FPGA development and hardware acceleration. As a HiWi (Research Assistant) at
+                    Max Planck Institute for Informatics, he works at the intersection of HCI and reconfigurable computing,
+                    pioneering new approaches to making FPGAs accessible to software engineers.
+                  </p>
+                  <a
+                    href="https://www.linkedin.com/in/ayushkumar1808/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                    <span>Connect on LinkedIn</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Sagnik Dutta */}
+              <div className="backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10 hover:border-purple-400/50 transition-all duration-300 transform hover:scale-105">
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <img
+                      src="/Sagnik.png"
+                      alt="Sagnik Dutta"
+                      className="w-40 h-40 rounded-full object-cover border-4 border-purple-400/30"
+                    />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 blur-xl opacity-20"></div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Sagnik Dutta</h3>
+                  <div className="text-purple-400 font-semibold mb-4">CTO & Co-Founder</div>
+                  <p className="text-white/80 leading-relaxed mb-6">
+                    Sagnik is a PhD student at Max Planck Institute for Informatics, specializing in algorithms and complexity.
+                    With a strong foundation in theoretical computer science, he architects the compiler technology that transforms
+                    PyTorch models into optimized FPGA implementations.
+                  </p>
+                  <a
+                    href="https://www.linkedin.com/in/sagnik-dutta-aa08211b5/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 text-purple-400 hover:text-purple-300 transition-colors"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                    <span>Connect on LinkedIn</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Team Credentials */}
+            <div className="mt-12 backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10">
+              <h3 className="text-2xl font-bold text-white mb-6 text-center">Why We're Uniquely Positioned</h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Cpu className="w-8 h-8 text-cyan-400" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2">Hardware Expertise</h4>
+                  <p className="text-white/70">Deep FPGA experience and HCI research background</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Code className="w-8 h-8 text-purple-400" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2">Theoretical Foundation</h4>
+                  <p className="text-white/70">PhD-level algorithms and complexity theory expertise</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2">World-Class Institution</h4>
+                  <p className="text-white/70">Backed by Max Planck Institute research excellence</p>
+                </div>
               </div>
             </div>
           </div>
