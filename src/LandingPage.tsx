@@ -279,14 +279,14 @@ function LandingPage() {
                 <video
                   controls
                   className="w-full h-auto"
-                  poster="/public/image.png"
+                  poster="/image.png"
                 >
                   <source src="/Demo.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
               <p className="text-white/70 text-center mt-4">
-                Watch our proof of concept demonstrating PyTorch to FPGA compilation
+                Watch our proof of concept demonstrating Spec-2-RTL (Natural Language to RTL)
               </p>
             </div>
 
@@ -360,7 +360,7 @@ function LandingPage() {
                   <div className="text-cyan-400 font-semibold mb-4">CEO & Co-Founder</div>
                   <p className="text-white/80 leading-relaxed mb-6">
                     Ayush brings deep expertise in FPGA development and hardware acceleration. As a HiWi (Research Assistant) at
-                    Max Planck Institute for Informatics, he works at the intersection of HCI and reconfigurable computing,
+                    Max Planck Institute for Informatics, he works at the intersection of HCI,
                     pioneering new approaches to making FPGAs accessible to software engineers.
                   </p>
                   <a
@@ -409,7 +409,7 @@ function LandingPage() {
             {/* Team Credentials */}
             <div className="mt-12 backdrop-blur-md bg-black/50 rounded-3xl p-8 border border-white/10">
               <h3 className="text-2xl font-bold text-white mb-6 text-center">Why We're Uniquely Positioned</h3>
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Cpu className="w-8 h-8 text-cyan-400" />
@@ -423,13 +423,6 @@ function LandingPage() {
                   </div>
                   <h4 className="font-bold text-white mb-2">Theoretical Foundation</h4>
                   <p className="text-white/70">PhD-level algorithms and complexity theory expertise</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8 text-blue-400" />
-                  </div>
-                  <h4 className="font-bold text-white mb-2">World-Class Institution</h4>
-                  <p className="text-white/70">Backed by Max Planck Institute research excellence</p>
                 </div>
               </div>
             </div>
