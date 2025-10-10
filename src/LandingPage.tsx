@@ -290,7 +290,8 @@ function LandingPage() {
                   <img
                     src="/ConfigAI-benchmark.png"
                     alt="ConfigAI vs GPT-4o Benchmark Comparison"
-                    className="w-full h-auto"
+                    className="w-full h-auto object-contain"
+                    style={{ maxHeight: '500px' }}
                   />
                 </div>
               </div>
@@ -304,15 +305,15 @@ function LandingPage() {
                 </div>
                 <h3 className="text-2xl font-bold text-white">See It In Action</h3>
               </div>
-              <div className="relative rounded-2xl overflow-hidden border border-white/20 bg-black">
-                <video
-                  controls
-                  className="w-full h-auto"
-                  preload="metadata"
-                >
-                  <source src="/Demo.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+              <div className="relative rounded-2xl overflow-hidden border border-white/20 bg-black" style={{ paddingBottom: '56.25%', height: 0 }}>
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src="https://www.youtube.com/embed/VIzWT8A7U4I"
+                  title="ConfigAI Demo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
               </div>
               <p className="text-white/70 text-center mt-4">
                 Watch our proof of concept demonstrating Spec-2-RTL (Natural Language to RTL)
