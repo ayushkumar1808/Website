@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-function Demo() {
+function ConfigAICompiler() {
   const [currentPage, setCurrentPage] = useState<'upload' | 'loading' | 'waiting' | 'results'>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [modelName, setModelName] = useState('Model');
   const [inputShape, setInputShape] = useState('1,3,32,32');
   const [optLevel, setOptLevel] = useState(0);
-  const [apiKey, setApiKey] = useState('demo-key-12345');
   const [jobId, setJobId] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [hlsCode, setHlsCode] = useState('');
@@ -17,12 +16,9 @@ function Demo() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // API Configuration
-  // IMPORTANT: Change this to your VM's IP address or domain
-  // Example: 'http://your-vm-ip:8000/api' or 'https://api.yourdomain.com/api'
-  const API_URL = process.env.REACT_APP_API_URL || 'http://YOUR_VM_IP:8000/api';
+  // API URL - connects to your GCP backend
+  const API_URL = 'http://34.147.66.35:8000/api';
 
-  // Handle timer for long waits
   useEffect(() => {
     if (currentPage === 'loading') {
       setWaitSeconds(0);
@@ -65,7 +61,7 @@ function Demo() {
   };
 
   const handleSubmit = async () => {
-    if (!file || !apiKey.trim()) return;
+    if (!file) return;
     
     setCurrentPage('loading');
     setError('');
@@ -82,9 +78,6 @@ function Demo() {
 
       const res = await fetch(`${API_URL}/compile`, {
         method: 'POST',
-        headers: {
-          'X-API-Key': apiKey,
-        },
         body: formData,
       });
 
@@ -99,7 +92,6 @@ function Demo() {
         setJobId(data.job_id);
         setDownloadUrl(data.download_url);
         
-        // Simulate fetching preview data (in real implementation, you might unzip and show files)
         setHlsCode('// HLS C++ code generated successfully\n// Download the package to view full code');
         setMlirCode('// MLIR intermediate representation generated\n// Download the package to view full code');
         setMetadata(JSON.stringify({
@@ -122,7 +114,6 @@ function Demo() {
 
   const handleDownload = () => {
     if (downloadUrl) {
-      // downloadUrl already includes /api/download/{id}, so construct full URL
       const baseUrl = API_URL.replace('/api', '');
       window.location.href = `${baseUrl}${downloadUrl}`;
     }
@@ -184,8 +175,8 @@ function Demo() {
               />
             </div>
 
-            {/* Configuration */}
-            <div className="grid md:grid-cols-2 gap-4">
+            {/* Configuration - Only 3 fields now */}
+            <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Model Class Name</label>
                 <input
@@ -219,17 +210,6 @@ function Demo() {
                   className="w-full p-3 bg-black border border-white/30 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">API Key</label>
-                <input
-                  type="text"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Your API key"
-                  className="w-full p-3 bg-black border border-white/30 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-                />
-              </div>
             </div>
 
             {error && (
@@ -241,7 +221,7 @@ function Demo() {
             <div className="flex justify-center">
               <button
                 onClick={handleSubmit}
-                disabled={!file || !apiKey.trim()}
+                disabled={!file}
                 className="px-8 py-4 bg-gradient-to-r from-cyan-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold rounded-full transition-all disabled:cursor-not-allowed text-lg"
               >
                 🚀 Compile to HLS
@@ -347,7 +327,6 @@ function Demo() {
       <div className="absolute inset-0 opacity-5 bg-grid-pattern pointer-events-none"></div>
       
       <div className="max-w-screen-2xl mx-auto p-6">
-        {/* Header */}
         <div className="text-center mb-12 pt-4">
           <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2 text-sm text-green-400 font-medium mb-4">
             <span>✓</span>
@@ -373,7 +352,6 @@ function Demo() {
           <p className="text-sm text-gray-400">Job ID: {jobId}</p>
         </div>
 
-        {/* Results Grid */}
         <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-250px)] min-h-[600px]">
           {/* HLS Code Panel */}
           <div className="bg-white/[0.02] border border-white/10 rounded-xl flex flex-col overflow-hidden relative">
@@ -381,25 +359,19 @@ function Demo() {
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-600"></div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-md bg-cyan-400/20 text-cyan-400 flex items-center justify-center text-base">
-                    ⚡
-                  </div>
+                  <div className="w-8 h-8 rounded-md bg-cyan-400/20 text-cyan-400 flex items-center justify-center text-base">⚡</div>
                   <span className="text-lg font-semibold">HLS C++ Code</span>
                 </div>
                 <button 
                   className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center"
                   onClick={() => navigator.clipboard.writeText(hlsCode)}
                   title="Copy HLS Code"
-                >
-                  📋
-                </button>
+                >📋</button>
               </div>
             </div>
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-black/30 border border-white/10 border-l-4 border-l-cyan-400 rounded-lg p-6">
-                <pre className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {hlsCode || '// Download the package to view HLS code'}
-                </pre>
+                <pre className="text-sm leading-relaxed whitespace-pre-wrap">{hlsCode || '// Download the package to view HLS code'}</pre>
               </div>
             </div>
           </div>
@@ -410,25 +382,19 @@ function Demo() {
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-indigo-600"></div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-md bg-purple-500/20 text-purple-500 flex items-center justify-center text-base">
-                    🔄
-                  </div>
+                  <div className="w-8 h-8 rounded-md bg-purple-500/20 text-purple-500 flex items-center justify-center text-base">🔄</div>
                   <span className="text-lg font-semibold">MLIR Code</span>
                 </div>
                 <button 
                   className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center"
                   onClick={() => navigator.clipboard.writeText(mlirCode)}
                   title="Copy MLIR"
-                >
-                  📋
-                </button>
+                >📋</button>
               </div>
             </div>
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-black/30 border border-white/10 border-l-4 border-l-purple-500 rounded-lg p-6">
-                <pre className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {mlirCode || '// Download the package to view MLIR'}
-                </pre>
+                <pre className="text-sm leading-relaxed whitespace-pre-wrap">{mlirCode || '// Download the package to view MLIR'}</pre>
               </div>
             </div>
           </div>
@@ -439,25 +405,19 @@ function Demo() {
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-500 to-red-600"></div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-md bg-orange-500/20 text-orange-500 flex items-center justify-center text-base">
-                    📊
-                  </div>
+                  <div className="w-8 h-8 rounded-md bg-orange-500/20 text-orange-500 flex items-center justify-center text-base">📊</div>
                   <span className="text-lg font-semibold">Compilation Info</span>
                 </div>
                 <button 
                   className="w-8 h-8 border border-white/20 bg-transparent rounded-md text-gray-400 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center"
                   onClick={() => navigator.clipboard.writeText(metadata)}
                   title="Copy Metadata"
-                >
-                  📋
-                </button>
+                >📋</button>
               </div>
             </div>
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-black/50 border border-orange-500/30 border-l-4 border-l-orange-500 rounded-lg p-6">
-                <pre className="text-sm leading-relaxed font-mono">
-                  {metadata || '// No metadata available'}
-                </pre>
+                <pre className="text-sm leading-relaxed font-mono">{metadata || '// No metadata available'}</pre>
               </div>
             </div>
           </div>
@@ -488,4 +448,4 @@ function Demo() {
   );
 }
 
-export default Demo;
+export default ConfigAICompiler;
