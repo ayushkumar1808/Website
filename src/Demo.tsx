@@ -13,7 +13,8 @@ function ConfigAICompiler() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const API_URL = 'http://34.147.66.35:8000/api';
+  // Direct HTTPS connection to backend with nginx + Let's Encrypt SSL
+  const API_URL = 'https://api.configai.co';
 
   useEffect(() => {
     if (currentPage === 'loading') {
@@ -90,7 +91,8 @@ function ConfigAICompiler() {
 
   const handleDownload = () => {
     if (downloadUrl) {
-      window.location.href = `http://34.147.66.35:8000${downloadUrl}`;
+      // downloadUrl will be like "/api/download/abc123"
+      window.location.href = downloadUrl;
     }
   };
 
