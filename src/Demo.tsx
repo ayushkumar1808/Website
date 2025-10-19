@@ -64,7 +64,7 @@ function ConfigAICompiler() {
       formData.append('input_shape', inputShape);
       formData.append('opt_level', optLevel.toString());
 
-      const res = await fetch(`${API_URL}/compile`, {
+      const res = await fetch(`${API_URL}/api/compile`, {
         method: 'POST',
         body: formData,
       });
@@ -91,8 +91,8 @@ function ConfigAICompiler() {
 
   const handleDownload = () => {
     if (downloadUrl) {
-      // downloadUrl will be like "/api/download/abc123"
-      window.location.href = downloadUrl;
+      // downloadUrl is like "/api/download/abc123", make it absolute
+      window.location.href = `${API_URL}${downloadUrl}`;
     }
   };
 
