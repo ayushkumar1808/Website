@@ -1,3 +1,3 @@
 [build]
-  command = "mkdir -p dist && cp index.html configai-icon.png gemini-folder.png mpi-logo.png dist/ || true"
+  command = "mkdir -p dist && cp index.html configai-icon.png gemini-folder.png mpi-logo.png ConfigAI_Logo.svg dist/ || true"
   publish = "dist"
