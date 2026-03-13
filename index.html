@@ -898,7 +898,7 @@
             <div class="flex items-center gap-2">
               <img src="configai-logo.png" alt="ConfigAI" style="height:20px;object-fit:contain;">
             </div>
-            <span class="text-zinc-400 font-normal text-xs">© 2025 ConfigAI. All rights reserved.</span>
+            <span class="text-zinc-400 font-normal text-xs">© <span id="copyright-year"></span> ConfigAI. All rights reserved.</span>
           </div>
           <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-zinc-300 font-light">
             <a href="#" class="hover:text-white transition-colors">Privacy</a>
@@ -1347,6 +1347,7 @@
 
     window.addEventListener('load', () => {
       new InteractiveDotGrid('interactive-grid-canvas');
+      document.getElementById('copyright-year').textContent = new Date().getFullYear();
     });
   </script>
 </body>
