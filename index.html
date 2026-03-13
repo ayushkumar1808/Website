@@ -7,6 +7,7 @@
   <title>ConfigAI – The future of AI Inference is here.</title>
   <link rel="icon" type="image/png" href="configai-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -697,9 +698,7 @@
         Someone from our team will reach out to walk you through what we do, get a better sense of what you're working with, and figure out where we can actually make things easier for you.
       </p>
       <!-- Form -->
-      <form name="get-started" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitGetStarted(event)">
-        <input type="hidden" name="form-name" value="get-started">
-        <input type="hidden" name="bot-field" style="display:none">
+      <form onsubmit="submitGetStarted(event)">
         <div style="margin-bottom:18px;">
           <label style="display:block; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px;">Name</label>
           <input type="text" name="name" placeholder="Jane Smith" required
@@ -1252,18 +1251,35 @@
       document.getElementById('gs-modal-overlay').style.display = 'none';
       document.body.style.overflow = '';
     }
-    function submitGetStarted(e) {
+    const _sb = window.supabase.createClient(
+      'https://wvatsmixbflbpugizpwu.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2YXRzbWl4YmZsYnB1Z2l6cHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzY5MzQsImV4cCI6MjA4OTAxMjkzNH0.SmaJx6z5VR9EhJBl0vnua1M8pmwEKl67WluGUDb9rDM'
+    );
+
+    async function submitGetStarted(e) {
       e.preventDefault();
       const form = e.target;
       const btn = form.querySelector('button[type=submit]');
       btn.textContent = 'Sending...';
       btn.disabled = true;
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(form)).toString()
-      })
-      .then(() => {
+
+      const { error } = await _sb.from('leads').insert([{
+        name: form.querySelector('[name=name]').value,
+        email: form.querySelector('[name=email]').value,
+        company: form.querySelector('[name=company]').value
+      }]);
+
+      if (error) {
+        btn.textContent = 'Error — try again';
+        btn.style.background = '#ff4444';
+        btn.style.color = '#fff';
+        btn.disabled = false;
+        setTimeout(() => {
+          btn.textContent = 'Get Started';
+          btn.style.background = '#fff';
+          btn.style.color = '#0a0f18';
+        }, 2500);
+      } else {
         btn.textContent = 'Submitted!';
         btn.style.background = '#e4e4e4';
         setTimeout(() => {
@@ -1274,18 +1290,7 @@
           btn.style.background = '#fff';
           btn.disabled = false;
         }, 1500);
-      })
-      .catch(() => {
-        btn.textContent = 'Error — try again';
-        btn.style.background = '#ff4444';
-        btn.style.color = '#fff';
-        btn.disabled = false;
-        setTimeout(() => {
-          btn.textContent = 'Get Started';
-          btn.style.background = '#fff';
-          btn.style.color = '#0a0f18';
-        }, 2500);
-      });
+      }
     }
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
