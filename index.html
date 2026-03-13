@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap"
     rel="stylesheet">
   <style>
     * {
@@ -23,7 +23,7 @@
       padding: 0;
       background-color: #050810;
       color: #ffffff;
-      font-family: 'Poppins', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       scrollbar-width: none;
       height: 100%;
     }
@@ -632,7 +632,7 @@
     </div>
     <div class="hidden md:flex items-center gap-3">
       <a href="#" class="text-sm text-zinc-300 hover:text-white transition-colors">Try Demo</a>
-      <a href="#" onclick="scrollToSection(3);return false;"
+      <a href="#" onclick="openGetStartedModal();return false;"
         class="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap">
         Get Started
       </a>
@@ -660,22 +660,70 @@
         </svg>
       </button>
     </div>
-    <div class="flex flex-col px-6 pt-2">
+    <div class="flex flex-col px-6 pt-4">
       <a href="#" onclick="scrollToSection(1); closeMobileMenu(); return false;"
-        class="text-white text-base font-normal py-[8px] hover:text-zinc-300 transition-colors">Challenge</a>
+        class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Challenge</a>
       <a href="#" onclick="scrollToSection(2); closeMobileMenu(); return false;"
-        class="text-white text-base font-normal py-[8px] hover:text-zinc-300 transition-colors">Platform</a>
+        class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Platform</a>
       <a href="#" onclick="scrollToSection(3); closeMobileMenu(); return false;"
-        class="text-white text-base font-normal py-[8px] hover:text-zinc-300 transition-colors">Waitlist</a>
-      <div class="border-t border-white/10"></div>
+        class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Waitlist</a>
+      <div class="border-t border-white/10 my-2"></div>
       <a href="#" onclick="closeMobileMenu()"
-        class="text-white text-base font-normal py-[8px] hover:text-zinc-300 transition-colors">Try Demo</a>
+        class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
     </div>
-    <div class="px-6 pt-2 pb-6">
-      <a href="#" onclick="scrollToSection(3); closeMobileMenu(); return false;"
+    <div class="px-6 pt-6 pb-6">
+      <a href="#" onclick="closeMobileMenu(); openGetStartedModal(); return false;"
         class="w-full block text-center bg-white text-black px-6 py-3 rounded-xl font-medium text-base hover:bg-zinc-200 transition-colors">
         Get Started
       </a>
+    </div>
+  </div>
+
+  <!-- ── Get Started Modal ── -->
+  <div id="gs-modal-overlay" onclick="closeGetStartedModal(event)"
+    style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+    <div id="gs-modal" style="background:#0d1117; border:1px solid rgba(255,255,255,0.1); border-radius:12px; width:100%; max-width:440px; padding:32px; position:relative; font-family:'Inter',sans-serif;">
+      <!-- Header -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <span style="font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.45);">Get Started</span>
+        <button onclick="closeGetStartedModal()" style="background:none; border:none; cursor:pointer; padding:4px; color:rgba(255,255,255,0.5); line-height:0;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="12" y1="4" x2="4" y2="12"/><line x1="4" y1="4" x2="12" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Description -->
+      <p style="font-size:14px; color:rgba(255,255,255,0.75); line-height:1.6; margin:0 0 28px;">
+        Someone from our team will reach out to walk you through what we do, get a better sense of what you're working with, and figure out where we can actually make things easier for you.
+      </p>
+      <!-- Form -->
+      <form name="get-started" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitGetStarted(event)">
+        <input type="hidden" name="form-name" value="get-started">
+        <input type="hidden" name="bot-field" style="display:none">
+        <div style="margin-bottom:18px;">
+          <label style="display:block; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px;">Name</label>
+          <input type="text" name="name" placeholder="Jane Smith" required
+            style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:11px 14px; font-size:14px; color:#fff; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box;"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px;">Email</label>
+          <input type="email" name="email" placeholder="jane@company.com" required
+            style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:11px 14px; font-size:14px; color:#fff; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box;"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+        <div style="margin-bottom:24px;">
+          <label style="display:block; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px;">Company</label>
+          <input type="text" name="company" placeholder="Acme Inc."
+            style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:11px 14px; font-size:14px; color:#fff; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box;"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+        <button type="submit"
+          style="width:100%; background:#fff; color:#0a0f18; border:none; border-radius:8px; padding:13px; font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; font-family:'Inter',sans-serif; cursor:pointer; transition:background 0.15s;"
+          onmouseover="this.style.background='#e4e4e4'" onmouseout="this.style.background='#fff'">
+          Get Started
+        </button>
+      </form>
     </div>
   </div>
 
@@ -922,7 +970,7 @@
             <a href="#"
               class="inline-flex items-center justify-center bg-transparent text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-white/10"
               style="border:1px solid rgba(255,255,255,0.25);">Try Demo</a>
-            <a href="#"
+            <a href="#" onclick="openGetStartedModal(); return false;"
               class="inline-flex items-center justify-center bg-white text-[#0a0f18] px-6 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-zinc-100">
               Get Started
             </a>
@@ -1191,6 +1239,59 @@
 
     window.addEventListener('load', () => {
       setTimeout(runAnimation, 600);
+    });
+
+    // ─── Get Started Modal ────────────────────────────────────────────────────
+    function openGetStartedModal() {
+      const overlay = document.getElementById('gs-modal-overlay');
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeGetStartedModal(e) {
+      if (e && e.target !== document.getElementById('gs-modal-overlay')) return;
+      document.getElementById('gs-modal-overlay').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    function submitGetStarted(e) {
+      e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector('button[type=submit]');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString()
+      })
+      .then(() => {
+        btn.textContent = 'Submitted!';
+        btn.style.background = '#e4e4e4';
+        setTimeout(() => {
+          document.getElementById('gs-modal-overlay').style.display = 'none';
+          document.body.style.overflow = '';
+          form.reset();
+          btn.textContent = 'Get Started';
+          btn.style.background = '#fff';
+          btn.disabled = false;
+        }, 1500);
+      })
+      .catch(() => {
+        btn.textContent = 'Error — try again';
+        btn.style.background = '#ff4444';
+        btn.style.color = '#fff';
+        btn.disabled = false;
+        setTimeout(() => {
+          btn.textContent = 'Get Started';
+          btn.style.background = '#fff';
+          btn.style.color = '#0a0f18';
+        }, 2500);
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('gs-modal-overlay').style.display = 'none';
+        document.body.style.overflow = '';
+      }
     });
 
     // ─── Mobile Menu ──────────────────────────────────────────────────────────
