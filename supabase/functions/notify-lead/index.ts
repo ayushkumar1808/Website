@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 serve(async (req) => {
   const payload = await req.json()
-  const record = payload.record
+  const record = payload.record ?? payload
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
