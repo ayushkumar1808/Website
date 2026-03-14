@@ -62,7 +62,8 @@
       pointer-events: none; overflow: hidden;
       border-radius: 0 0 20px 20px;
     }
-    .phase.hidden { opacity: 0; transform: scale(0.97); }
+    .phase.hidden { opacity: 0; transform: scale(0.97); pointer-events: none; }
+    .phase.visible { pointer-events: auto; }
     .phase.visible { opacity: 1; transform: scale(1); }
 
     /* ── DROP ZONE ── */
