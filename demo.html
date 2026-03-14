@@ -33,43 +33,23 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* ══ MAC WINDOW ══ */
-    .mac-window {
-      border-radius: 10px;
-      background: #0d0e18;
-      border: 1px solid rgba(255,255,255,0.10);
+    /* ══ UPLOAD CARD ══ */
+    .upload-card {
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.09);
       box-shadow:
-        0 40px 100px rgba(0,0,0,0.75),
-        0 0 0 1px rgba(255,255,255,0.04),
-        inset 0 1px 0 rgba(255,255,255,0.06);
+        0 40px 80px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       overflow: hidden;
       position: relative;
     }
 
-    .mac-titlebar {
-      display: flex; align-items: center; gap: 8px;
-      height: 27px; padding: 0 16px;
-      background: rgba(255,255,255,0.025);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      position: relative;
-    }
-    .mac-dots { display: flex; gap: 6px; }
-    .mac-dot { width: 12px; height: 12px; border-radius: 50%; cursor: default; }
-    .mac-dot.red   { background: #ff5f57; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3); }
-    .mac-dot.yellow{ background: #febc2e; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3); }
-    .mac-dot.green { background: #28c840; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3); }
-    .mac-title {
-      position: absolute; left: 50%; transform: translateX(-50%);
-      font-size: 12px; font-weight: 500;
-      color: rgba(255,255,255,0.35);
-      letter-spacing: 0.02em;
-      font-family: 'Courier New', monospace;
-      user-select: none;
-    }
-
     .mac-body {
       position: relative;
-      height: clamp(200px, 26vh, 280px);
+      height: clamp(220px, 28vh, 300px);
       overflow: visible;
     }
 
@@ -312,21 +292,9 @@
       </p>
     </div>
 
-    <!-- ══ MAC WINDOW ══ -->
-    <div class="w-full max-w-2xl mx-auto px-2">
-      <div class="mac-window">
-
-        <!-- Title bar -->
-        <div class="mac-titlebar">
-          <div class="mac-dots">
-            <div class="mac-dot red"></div>
-            <div class="mac-dot yellow"></div>
-            <div class="mac-dot green"></div>
-          </div>
-          <span class="mac-title">configai — compiler</span>
-        </div>
-
-        <!-- Body -->
+    <!-- ══ UPLOAD CARD ══ -->
+    <div class="w-full max-w-xl mx-auto px-2">
+      <div class="upload-card">
         <div class="mac-body" id="mac-body">
 
           <!-- PHASE: Drop zone -->
@@ -373,7 +341,7 @@
                 <span></span><span></span><span></span>
               </div>
             </div>
-            <a id="download-el" href="#" onclick="return false;">
+            <div id="download-el" style="cursor:pointer;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
@@ -383,11 +351,11 @@
                 <div class="dl-filename">hardware.bit</div>
                 <div class="dl-size">2.4 MB · FPGA bitstream</div>
               </div>
-            </a>
+            </div>
           </div>
 
         </div><!-- /mac-body -->
-      </div><!-- /mac-window -->
+      </div><!-- /upload-card -->
 
       <p class="mt-3 text-center">
         <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-light text-zinc-400"
@@ -527,11 +495,12 @@
         setTimeout(() => { compileLabel.textContent = verb; }, 2100 + i * VERB_MS);
       });
 
+      const bitName = filename.replace(/\.[^.]+$/, '') + '.bit';
       const compileDone = 2100 + COMPILE_VERBS.length * VERB_MS;
       setTimeout(() => {
         compileWrap.classList.add('fade-out');
-        // Update download filename to match
-        document.querySelector('.dl-filename').textContent = filename.replace(/\.[^.]+$/, '') + '.bit';
+        document.querySelector('.dl-filename').textContent = bitName;
+        downloadEl.dataset.filename = bitName;
         setTimeout(() => { downloadEl.classList.add('visible'); }, 400);
       }, compileDone);
     }
@@ -575,13 +544,24 @@
       fileInput.value = '';
     });
 
-    // ── Download: click resets to idle ──
+    // ── Download: trigger real file download, then reset to idle ──
     downloadEl.addEventListener('click', () => {
+      const fname = downloadEl.dataset.filename || 'hardware.bit';
+      // Create a dummy bitstream blob and trigger download
+      const blob = new Blob(['FPGA_BITSTREAM_DEMO\n' + fname], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      // Reset UI after short delay
       setTimeout(() => {
         dropZone.classList.add('idle-breathe');
         dzTitle.textContent = 'Drop your model here';
         showPhase(phaseDrop);
-      }, 300);
+      }, 400);
     });
 
     // ─── Nav scroll ───────────────────────────────────────────────────────────
