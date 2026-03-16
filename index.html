@@ -595,23 +595,66 @@
         opacity: 0;
       }
     }
+
+    /* ── Skip Navigation ── */
+    .skip-nav {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: #fff;
+      color: #000;
+      padding: 0.5rem 1rem;
+      z-index: 9999;
+      font-size: 1rem;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .skip-nav:focus {
+      top: 1rem;
+    }
+
+    /* ── Focus Indicators ── */
+    :focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ── Prefers-Reduced-Motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      #stars-canvas,
+      [class*="particle"],
+      [id*="particle"] {
+        display: none !important;
+        animation: none !important;
+      }
+      .drop-zone.idle-breathe {
+        animation: none !important;
+      }
+      .pulse-dots span {
+        animation: none !important;
+      }
+    }
   </style>
 </head>
 
 <body>
 
+  <a href="#main-content" class="skip-nav">Skip to main content</a>
+
   <canvas id="stars-canvas"></canvas>
 
   <!-- ── Announcement Bar ── -->
   <a id="announce-bar" href="https://www.maximize-incubator.com/" target="_blank" rel="noopener"
+    aria-label="ConfigAI accepted to MAX!MIZE Batch #7 — learn more"
     class="fixed top-0 left-0 right-0 z-[60] h-10 flex items-center justify-between px-4 border-b border-white/10 hover:bg-white/5 transition-colors"
     style="background: linear-gradient(to right, rgba(59,130,246,0.18), rgba(255,255,255,0.07), rgba(59,130,246,0.18));">
-    <span class="text-sm text-white/90 font-light flex-1 text-center">
+    <span class="text-sm text-white/90 font-light flex-1 text-center" aria-hidden="true">
       <span class="font-medium">New:</span>&nbsp;ConfigAI got accepted to MAX!MIZE<span class="hidden sm:inline">
         Batch&nbsp;#7</span>
     </span>
     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;" aria-hidden="true">
       <path d="M5 12h14" />
       <path d="m12 5 7 7-7 7" />
     </svg>
@@ -628,8 +671,6 @@
         class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Challenge</a>
       <a href="#" onclick="scrollToSection(2);return false;"
         class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Platform</a>
-      <a href="#" onclick="scrollToSection(3);return false;"
-        class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Waitlist</a>
     </div>
     <div class="hidden md:flex items-center gap-3">
       <a href="demo.html" class="text-sm text-zinc-300 hover:text-white transition-colors">Try Demo</a>
@@ -666,8 +707,6 @@
         class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Challenge</a>
       <a href="#" onclick="scrollToSection(2); closeMobileMenu(); return false;"
         class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Platform</a>
-      <a href="#" onclick="scrollToSection(3); closeMobileMenu(); return false;"
-        class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Waitlist</a>
       <div class="border-t border-white/10 my-2"></div>
       <a href="demo.html"
         class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
@@ -730,7 +769,7 @@
   <div class="scroll-container" id="scroll-container">
 
     <!-- ── SECTION 1: Hero ── -->
-    <section class="snap-section hero-section text-center px-4 sm:px-6 lg:px-8">
+    <section id="main-content" class="snap-section hero-section text-center px-4 sm:px-6 lg:px-8">
       <div class="max-w-[900px] mx-auto w-full flex flex-col items-center">
 
         <h1 class="serif leading-[1.1] mb-4 tracking-tight text-white text-4xl md:text-5xl lg:text-6xl">
@@ -824,7 +863,7 @@
                 <!-- CURSOR + DRAGGED FILE (always present, animated) -->
                 <div id="cursor-el">
                   <div id="dragged-file">
-                    <img src="gemini-folder.png" alt="model" style="width:61px;height:52px;display:block;">
+                    <img src="gemini-folder.png" alt="A drag-and-drop interface where a model file is automatically compiled to FPGA hardware" style="width:61px;height:52px;display:block;">
                   </div>
                   <!-- Cursor SVG (white arrow with dark outline) -->
                   <svg class="cursor-svg" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
@@ -847,8 +886,8 @@
           </div>
 
           <p class="mt-3 text-center">
-            <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-light text-zinc-400"
-              style="border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04);">
+            <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-light"
+              style="color:#cccccc; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06);">
               From model code to FPGA bitstream — automatically
             </span>
           </p>
@@ -862,12 +901,12 @@
           <div class="flex items-center justify-center gap-10 flex-wrap">
             <!-- Max Planck Institute -->
             <div class="backed-logo">
-              <img src="mpi-logo.png" alt="Max Planck Institute" style="height:30px;width:30px;object-fit:contain;">
+              <img src="mpi-logo.png" alt="Max Planck Institute for Informatics" style="height:30px;width:30px;object-fit:contain;">
               <span class="text-zinc-300 text-sm font-medium">Max Planck Institute</span>
             </div>
             <!-- Google for Startups -->
             <div class="backed-logo">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Google for Startups">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   fill="#4285F4" />
@@ -901,8 +940,8 @@
           We believe FPGAs shouldn't just be for hardware experts&nbsp;— they should be for every ML engineer.
         </p>
         <div class="yt-embed w-full max-w-3xl mx-auto" style="aspect-ratio:16/9; position:relative; overflow:hidden;">
-          <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/_NRqN3vsKJ4"
-            title="ConfigAI Demo" frameborder="0"
+          <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube-nocookie.com/embed/_NRqN3vsKJ4"
+            title="ConfigAI — FPGA compiler demo video" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen>
           </iframe>
@@ -926,7 +965,7 @@
             <h3 class="serif font-light text-lg text-white mb-3 leading-7">
               AI models, <span class="serif-italic">compiled</span> for hardware.
             </h3>
-            <p class="text-sm md:text-base text-zinc-200 font-light leading-6 flex-grow">
+            <p class="text-base text-zinc-200 font-light flex-grow" style="line-height:1.6">
               Submit a model, and ConfigAI maps, schedules, and generates FPGA-ready hardware automatically. Instead of
               wrestling with low-level design flows, ML engineers can move from model code to deployable hardware in
               minutes.
@@ -938,7 +977,7 @@
             <h3 class="serif font-light text-lg text-white mb-3 leading-7">
               A <span class="serif-italic">faster</span> path to FPGA deployment.
             </h3>
-            <p class="text-sm md:text-base text-zinc-200 font-light leading-6 flex-grow">
+            <p class="text-base text-zinc-200 font-light flex-grow" style="line-height:1.6">
               With ConfigAI, teams can turn high-level ML models into low-latency FPGA implementations without deep
               hardware expertise. You stay focused on performance and iteration, while the compiler handles the heavy
               lifting of hardware generation.
@@ -958,21 +997,24 @@
       <div
         class="flex-1 flex flex-col items-center justify-center text-center px-6 py-20 relative z-10 pointer-events-none">
         <div class="max-w-[800px] mx-auto flex flex-col items-center gap-6">
-          <p class="text-sm uppercase tracking-[0.25em] text-zinc-400 font-light">Join the Revolution</p>
+          <p class="text-sm uppercase tracking-[0.25em] font-light" style="color:#bbbbbb;">Join the Revolution</p>
           <h2 class="serif font-light text-white text-3xl md:text-4xl leading-tight">
             Ready to put ConfigAI to work?
           </h2>
           <p class="text-base md:text-lg text-zinc-300 max-w-xl font-light leading-relaxed">
             Go from model code to FPGA-ready hardware in minutes.
           </p>
-          <div class="flex flex-row gap-3 justify-center mt-2 pointer-events-auto">
-            <a href="demo.html"
-              class="inline-flex items-center justify-center bg-transparent text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-white/10"
-              style="border:1px solid rgba(255,255,255,0.25);">Try Demo</a>
+          <div class="flex flex-row gap-3 justify-center items-start mt-2 pointer-events-auto">
             <a href="#" onclick="openGetStartedModal(); return false;"
               class="inline-flex items-center justify-center bg-white text-[#0a0f18] px-6 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-zinc-100">
               Get Started
             </a>
+            <div class="flex flex-col items-center gap-1">
+              <a href="demo.html"
+                class="inline-flex items-center justify-center bg-transparent text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-white/10"
+                style="border:1px solid rgba(255,255,255,0.25);">Try Demo</a>
+              <span class="text-xs text-zinc-400">No account needed</span>
+            </div>
           </div>
         </div>
       </div>
