@@ -22,8 +22,8 @@
     }
     body::-webkit-scrollbar { display: none; }
     .serif { font-family: 'Playfair Display', serif; }
-    [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
-    [data-active="false"] { color: rgba(255,255,255,0.45); }
+    [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.15) !important; }
+    [data-active="false"] { color: rgba(255,255,255,0.35) !important; background: transparent !important; }
     .upload-zone:hover { border-color: rgba(255,255,255,0.3) !important; }
   </style>
 </head>
@@ -94,14 +94,12 @@
 
   <!-- ── Language Toggle ── -->
   <div class="relative z-[1] flex justify-center pb-2" style="margin-top:-8px;">
-    <div class="flex items-center gap-1 text-xs font-semibold"
-         style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:4px 6px;">
+    <div class="flex items-center text-xs font-semibold"
+         style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:3px;gap:2px;">
       <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
-        class="px-2 py-1 rounded transition-colors"
-        style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
-      <span class="text-zinc-600">/</span>
+        class="px-3 py-1 rounded transition-all">EN</button>
       <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
-        class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
+        class="px-3 py-1 rounded transition-all">DE</button>
     </div>
   </div>
 
