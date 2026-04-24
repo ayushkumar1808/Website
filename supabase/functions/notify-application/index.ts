@@ -15,6 +15,32 @@ function esc(str: string): string {
     .replace(/'/g, '&#39;')
 }
 
+/** Validate email address format */
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+/**
+ * Return a safe anchor tag if the URL uses http/https, otherwise plain escaped text.
+ * Prevents javascript: URI injection in href attributes.
+ */
+function safeHref(url: string, style: string): string {
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return `<a href="${esc(url)}" style="${style}">${esc(url)}</a>`
+    }
+  } catch {
+    // invalid URL — fall through to plain text
+  }
+  return esc(url)
+}
+
+/** Storage bucket name */
+const BUCKET = 'applications'
+/** Signed URL TTL in seconds (24 hours) */
+const SIGNED_URL_EXPIRES = 86400
+
 /** Role slug → display name map */
 const ROLE_MAP: Record<string, string> = {
   'compiler-engineer': 'Compiler Engineer',
@@ -97,6 +123,10 @@ serve(async (req: Request) => {
       return jsonResponse({ error: `Missing required fields: ${missing.join(', ')}` }, 400, allowedOrigin)
     }
 
+    if (!isValidEmail(String(email))) {
+      return jsonResponse({ error: 'Invalid email address' }, 400, allowedOrigin)
+    }
+
     // -------------------------------------------------------------------------
     // Resolve role display name
     // -------------------------------------------------------------------------
@@ -112,12 +142,14 @@ serve(async (req: Request) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
+    // Normalise additional_paths to a flat string array
+    const safeAdditionalPaths: string[] = Array.isArray(additional_paths)
+      ? additional_paths.filter((p): p is string => typeof p === 'string')
+      : []
+
     // -------------------------------------------------------------------------
     // Generate 24-hour signed URLs for all uploaded files
     // -------------------------------------------------------------------------
-    const BUCKET = 'applications'
-    const SIGNED_URL_EXPIRES = 86400 // 24 hours
-
     async function getSignedUrl(path: string): Promise<string> {
       const { data, error } = await supabase.storage
         .from(BUCKET)
@@ -128,11 +160,11 @@ serve(async (req: Request) => {
       return data.signedUrl
     }
 
-    const cvUrl = await getSignedUrl(cv_path as string)
-    const coverLetterUrl = await getSignedUrl(cover_letter_path as string)
-    const additionalUrls: string[] = await Promise.all(
-      (additional_paths as string[]).map((p) => getSignedUrl(p))
-    )
+    const [cvUrl, coverLetterUrl, ...additionalUrls] = await Promise.all([
+      getSignedUrl(cv_path as string),
+      getSignedUrl(cover_letter_path as string),
+      ...safeAdditionalPaths.map((p) => getSignedUrl(p)),
+    ])
 
     // -------------------------------------------------------------------------
     // Insert row into applicants table
@@ -145,7 +177,7 @@ serve(async (req: Request) => {
       linkedin_url: linkedin_url || null,
       cv_path,
       cover_letter_path,
-      additional_paths: additional_paths.length > 0 ? additional_paths : null,
+      additional_paths: safeAdditionalPaths.length > 0 ? safeAdditionalPaths : null,
     })
 
     if (dbError) {
@@ -162,18 +194,17 @@ serve(async (req: Request) => {
       return `<li style="margin:6px 0;"><a href="${url}" style="color:#4f6ef7;text-decoration:none;">${label}</a></li>`
     }
 
-    const additionalDocLinks = (additional_paths as string[])
+    const additionalDocLinks = safeAdditionalPaths
       .map((p: string, i: number) => {
         const filename = p.split('/').pop() ?? `Additional ${i + 1}`
-        // Strip leading index prefix like "0-" from filename for display
         const display = filename.replace(/^\d+-/, '')
         return docLink(esc(display), additionalUrls[i])
       })
       .join('\n')
 
     const linkedinCell = linkedin_url
-      ? `<a href="${esc(linkedin_url as string)}" style="color:#4f6ef7;text-decoration:none;">${esc(linkedin_url as string)}</a>`
-      : '&mdash;'
+      ? safeHref(String(linkedin_url), 'color:#4f6ef7;text-decoration:none;')
+      : 'N/A'
 
     // -------------------------------------------------------------------------
     // Admin notification email
@@ -255,19 +286,20 @@ serve(async (req: Request) => {
       }
     }
 
-    await sendEmail({
-      from: 'ConfigAI Careers <careers@configai.co>',
-      to: 'ayush@configai.co',
-      subject: `New application: ${esc(name as string)} for ${esc(role)}`,
-      html: adminHtml,
-    })
-
-    await sendEmail({
-      from: 'ConfigAI Careers <careers@configai.co>',
-      to: email as string,
-      subject: `We received your application for ${role} at ConfigAI`,
-      html: applicantHtml,
-    })
+    await Promise.all([
+      sendEmail({
+        from: 'ConfigAI Careers <careers@configai.co>',
+        to: 'ayush@configai.co',
+        subject: `New application: ${esc(name as string)} for ${esc(role)}`,
+        html: adminHtml,
+      }),
+      sendEmail({
+        from: 'ConfigAI Careers <careers@configai.co>',
+        to: String(email),
+        subject: `We received your application for ${role} at ConfigAI`,
+        html: applicantHtml,
+      }),
+    ])
 
     // -------------------------------------------------------------------------
     // Success
