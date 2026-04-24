@@ -208,14 +208,14 @@ serve(async (req: Request) => {
     const resendApiKey = Deno.env.get('RESEND_API_KEY')!
 
     function docLink(label: string, url: string): string {
-      return `<li style="margin:6px 0;"><a href="${esc(url)}" style="color:#4f6ef7;text-decoration:none;">${label}</a></li>`
+      return `<li style="margin:6px 0;"><a href="${esc(url)}" style="color:#4f6ef7;text-decoration:none;">${esc(label)}</a></li>`
     }
 
     const additionalDocLinks = safeAdditionalPaths
       .map((p: string, i: number) => {
         const filename = p.split('/').pop() ?? `Additional ${i + 1}`
         const display = filename.replace(/^\d+-/, '')
-        return docLink(esc(display), additionalUrls[i])
+        return docLink(display, additionalUrls[i])
       })
       .join('\n')
 
