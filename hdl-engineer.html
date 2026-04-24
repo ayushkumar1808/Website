@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDL Engineer · Careers · ConfigAI</title>
+  <link rel="icon" type="image/png" href="configai-icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background-color: #050810; color: #ffffff; font-family: 'Inter', system-ui, sans-serif; scrollbar-width: none; }
+    body::-webkit-scrollbar { display: none; }
+    .serif { font-family: 'Playfair Display', serif; }
+    #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
+    [data-active="false"] { color: rgba(255,255,255,0.45); }
+    .upload-zone:hover { border-color: rgba(255,255,255,0.3) !important; }
+  </style>
+</head>
+
+<body>
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- ── Navbar ── -->
+  <nav id="main-nav" class="fixed left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4"
+    style="top:0; background: rgba(10,15,24,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="flex items-center">
+      <a href="index.html"><img src="configai-logo.png" alt="ConfigAI" style="height:30px;object-fit:contain;opacity:0.95;"></a>
+    </div>
+    <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+      <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Challenge</a>
+      <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Platform</a>
+      <a href="careers.html" class="text-sm font-medium text-white transition-colors" style="border-bottom:1px solid rgba(255,255,255,0.4);" data-en="Careers" data-de="Karriere">Careers</a>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <div class="flex items-center gap-1 text-xs font-semibold mr-1">
+        <button id="lang-btn-en" onclick="applyLang('en')" data-active="true" class="px-2 py-1 rounded transition-colors text-white" style="background:rgba(255,255,255,0.1);">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button id="lang-btn-de" onclick="applyLang('de')" data-active="false" class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
+      </div>
+      <a href="demo.html" class="text-sm text-zinc-300 font-medium hover:text-white transition-colors">Try Demo</a>
+      <a href="index.html" class="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap">Get Started</a>
+    </div>
+    <button class="md:hidden p-1 text-white" onclick="openMobileMenu()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- ── Mobile Menu ── -->
+  <div id="mobile-menu" class="fixed left-0 right-0 z-[70] flex-col"
+    style="top:0; background:#07090f; border-bottom:1px solid rgba(255,255,255,0.08); display:none;">
+    <div class="flex items-center justify-between px-6 py-4">
+      <img src="configai-logo.png" alt="ConfigAI" style="height:30px;object-fit:contain;opacity:0.95;">
+      <button onclick="closeMobileMenu()" class="text-white p-1">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="flex flex-col px-6 pt-4">
+      <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Challenge</a>
+      <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Platform</a>
+      <a href="careers.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+      <div class="border-t border-white/10 my-2"></div>
+      <a href="demo.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
+      <div class="flex items-center gap-2 py-[9px]">
+        <button onclick="applyLang('en'); closeMobileMenu();" data-active="true" class="px-3 py-1.5 rounded text-sm font-semibold" style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button onclick="applyLang('de'); closeMobileMenu();" data-active="false" class="px-3 py-1.5 rounded text-sm font-semibold text-zinc-400 hover:text-white">DE</button>
+      </div>
+    </div>
+    <div class="px-6 pt-4 pb-6">
+      <a href="index.html" class="w-full block text-center bg-white text-black px-6 py-3 rounded-xl font-medium text-base hover:bg-zinc-200 transition-colors">Get Started</a>
+    </div>
+  </div>
+
+  <!-- ── Breadcrumb ── -->
+  <div class="relative z-[1]" style="padding-top:72px;">
+    <nav class="max-w-5xl mx-auto px-6 lg:px-10 py-4 text-xs text-zinc-500 flex gap-2 items-center">
+      <a href="careers.html" class="hover:text-white transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+      <span>›</span>
+      <span class="text-zinc-300" data-en="HDL Engineer" data-de="HDL Engineer">HDL Engineer</span>
+    </nav>
+  </div>
+
+  <!-- ── Two-column layout ── -->
+  <div class="relative z-[1] max-w-5xl mx-auto px-6 lg:px-10 py-8 grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 items-start">
+
+    <!-- Left: Job content -->
+    <div>
+      <h1 class="serif font-light text-white text-4xl md:text-5xl mb-10"
+          data-en="HDL Engineer" data-de="HDL Engineer">HDL Engineer</h1>
+
+      <!-- About ConfigAI -->
+      <div class="mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4"
+            data-en="About ConfigAI" data-de="Uber ConfigAI">About ConfigAI</h2>
+        <p class="text-sm text-zinc-300 leading-relaxed"
+           data-en="ConfigAI is building the compiler that turns ML models into FPGA hardware automatically. We are based in Saarbrucken, backed by the Max Planck Institute for Informatics and Google for Startups, and working on one of the hardest problems at the intersection of machine learning and silicon design."
+           data-de="ConfigAI entwickelt den Compiler, der ML-Modelle automatisch in FPGA-Hardware umwandelt. Wir sind in Saarbrucken ansassig, werden vom Max-Planck-Institut fur Informatik und Google for Startups unterstutzt und arbeiten an einem der schwierigsten Probleme an der Schnittstelle von maschinellem Lernen und Chip-Design.">
+          ConfigAI is building the compiler that turns ML models into FPGA hardware automatically. We are based in Saarbrucken, backed by the Max Planck Institute for Informatics and Google for Startups, and working on one of the hardest problems at the intersection of machine learning and silicon design.
+        </p>
+      </div>
+
+      <!-- About the Role -->
+      <div class="mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4"
+            data-en="About the Role" data-de="Uber die Stelle">About the Role</h2>
+        <p class="text-sm text-zinc-300 leading-relaxed"
+           data-en="We are looking for an HDL Engineer to design and optimise the hardware building blocks that our compiler generates and assembles. You will write hand-crafted RTL modules in Verilog or VHDL, create testbenches, and work closely with compiler engineers to ensure the generated hardware meets area and timing targets. This is a 15 hrs/week, on-site role in Saarbrucken, open to students and professionals (m/w/d)."
+           data-de="Wir suchen einen HDL Engineer, der die Hardware-Bausteine entwirft und optimiert, die unser Compiler generiert und zusammensetzt. Sie schreiben handgefertigte RTL-Module in Verilog oder VHDL, erstellen Testbenches und arbeiten eng mit Compiler-Ingenieuren zusammen. Die Stelle umfasst 15 Std./Woche, ist vor Ort in Saarbrucken und offen fur Studierende und Berufstatige (m/w/d).">
+          We are looking for an HDL Engineer to design and optimise the hardware building blocks that our compiler generates and assembles. You will write hand-crafted RTL modules in Verilog or VHDL, create testbenches, and work closely with compiler engineers to ensure the generated hardware meets area and timing targets. This is a 15 hrs/week, on-site role in Saarbrucken, open to students and professionals (m/w/d).
+        </p>
+      </div>
+
+      <!-- Key Responsibilities -->
+      <div class="mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4"
+            data-en="Key Responsibilities" data-de="Hauptaufgaben">Key Responsibilities</h2>
+        <ul class="space-y-3 text-sm text-zinc-300">
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Design reusable RTL modules (Verilog/VHDL) that the compiler uses as hardware building blocks."
+                  data-de="Entwurf wiederverwendbarer RTL-Module (Verilog/VHDL), die der Compiler als Hardware-Bausteine verwendet.">Design reusable RTL modules (Verilog/VHDL) that the compiler uses as hardware building blocks.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Review and improve the HDL templates emitted by the compiler code generation backend."
+                  data-de="Uberprufung und Verbesserung der vom Compiler-Code-Generierungs-Backend erzeugten HDL-Templates.">Review and improve the HDL templates emitted by the compiler code generation backend.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Write testbenches to verify functional correctness of generated hardware modules."
+                  data-de="Schreiben von Testbenches zur Verifikation der funktionalen Korrektheit generierter Hardware-Module.">Write testbenches to verify functional correctness of generated hardware modules.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Optimise RTL for area, latency and throughput on Xilinx and Intel FPGA families."
+                  data-de="Optimierung von RTL fur Flache, Latenz und Durchsatz auf Xilinx- und Intel-FPGA-Familien.">Optimise RTL for area, latency and throughput on Xilinx and Intel FPGA families.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Collaborate with compiler engineers to define clean interfaces between generated and hand-written HDL."
+                  data-de="Zusammenarbeit mit Compiler-Ingenieuren zur Definition sauberer Schnittstellen zwischen generiertem und handgeschriebenem HDL.">Collaborate with compiler engineers to define clean interfaces between generated and hand-written HDL.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Support FPGA implementation flows: synthesis, place-and-route and timing closure."
+                  data-de="Unterstutzung von FPGA-Implementierungsabläufen: Synthese, Place-and-Route und Timing-Closure.">Support FPGA implementation flows: synthesis, place-and-route and timing closure.</span></li>
+        </ul>
+      </div>
+
+      <!-- Required Skills -->
+      <div class="mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4"
+            data-en="Required Skills and Experience" data-de="Erforderliche Kenntnisse">Required Skills and Experience</h2>
+        <ul class="space-y-3 text-sm text-zinc-300">
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Strong proficiency in Verilog or VHDL for RTL design."
+                  data-de="Fundierte Kenntnisse in Verilog oder VHDL fur RTL-Design.">Strong proficiency in Verilog or VHDL for RTL design.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Experience with FPGA implementation flows: synthesis, place-and-route and timing analysis."
+                  data-de="Erfahrung mit FPGA-Implementierungsabläufen: Synthese, Place-and-Route und Timing-Analyse.">Experience with FPGA implementation flows: synthesis, place-and-route and timing analysis.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Understanding of common digital design patterns: pipelining, FIFOs, state machines and AXI interfaces."
+                  data-de="Verstandnis gangiger digitaler Design-Muster: Pipelining, FIFOs, Zustandsmaschinen und AXI-Schnittstellen.">Understanding of common digital design patterns: pipelining, FIFOs, state machines and AXI interfaces.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Ability to write simulation testbenches and interpret waveform results."
+                  data-de="Fahigkeit, Simulations-Testbenches zu schreiben und Wellenform-Ergebnisse zu interpretieren.">Ability to write simulation testbenches and interpret waveform results.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Comfortable with Xilinx Vivado or Intel Quartus toolchains."
+                  data-de="Vertrautheit mit Xilinx Vivado oder Intel Quartus Toolchains.">Comfortable with Xilinx Vivado or Intel Quartus toolchains.</span></li>
+        </ul>
+      </div>
+
+      <!-- Preferred Skills -->
+      <div class="mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4"
+            data-en="Preferred Skills — Nice to Have" data-de="Bevorzugte Kenntnisse">Preferred Skills — Nice to Have</h2>
+        <ul class="space-y-3 text-sm text-zinc-300">
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Experience with High-Level Synthesis (HLS) tools such as Xilinx Vitis HLS or Bambu."
+                  data-de="Erfahrung mit High-Level-Synthese-(HLS-)Tools wie Xilinx Vitis HLS oder Bambu.">Experience with High-Level Synthesis (HLS) tools such as Xilinx Vitis HLS or Bambu.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Familiarity with ML accelerator architectures: systolic arrays, PE arrays or dataflow processors."
+                  data-de="Vertrautheit mit ML-Beschleuniger-Architekturen: systolische Arrays, PE-Arrays oder Datenfluss-Prozessoren.">Familiarity with ML accelerator architectures: systolic arrays, PE arrays or dataflow processors.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Knowledge of formal verification or property checking."
+                  data-de="Kenntnisse in formaler Verifikation oder Property-Checking.">Knowledge of formal verification or property checking.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Background in low-power design or timing-driven optimisation."
+                  data-de="Hintergrund in Low-Power-Design oder timing-gesteuerter Optimierung.">Background in low-power design or timing-driven optimisation.</span></li>
+        </ul>
+      </div>
+
+      <!-- Why Join Us -->
+      <div class="mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4"
+            data-en="Why Join Us" data-de="Warum bei uns">Why Join Us</h2>
+        <ul class="space-y-3 text-sm text-zinc-300">
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Your RTL work directly underpins every model we compile: close to the metal, real impact."
+                  data-de="Ihre RTL-Arbeit bildet die Grundlage fur jedes Modell, das wir kompilieren: nah am Metall, echter Einfluss.">Your RTL work directly underpins every model we compile: close to the metal, real impact.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Small team: your contributions will have direct, visible impact on the product."
+                  data-de="Kleines Team: Ihre Beitrage haben direkten, sichtbaren Einfluss auf das Produkt.">Small team: your contributions will have direct, visible impact on the product.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Research environment: direct access to expertise at the Max Planck Institute for Informatics."
+                  data-de="Forschungsumgebung: direkter Zugang zur Expertise des Max-Planck-Instituts fur Informatik.">Research environment: direct access to expertise at the Max Planck Institute for Informatics.</span></li>
+          <li class="flex gap-3"><span class="text-zinc-600 mt-0.5 flex-shrink-0">·</span>
+            <span data-en="Flexible 15 hrs/week commitment: ideal for students or researchers pursuing parallel work."
+                  data-de="Flexibles Engagement mit 15 Std./Woche: ideal fur Studierende oder Forschende.">Flexible 15 hrs/week commitment: ideal for students or researchers pursuing parallel work.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right: Sticky sidebar -->
+    <aside class="lg:sticky lg:top-20 pl-0 lg:pl-8 border-l-0 lg:border-l lg:border-white/5">
+      <div class="flex flex-col gap-5 mb-8">
+        <div>
+          <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5" data-en="Department" data-de="Abteilung">Department</p>
+          <p class="text-sm text-zinc-200 font-medium">Engineering</p>
+        </div>
+        <div>
+          <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5" data-en="Location" data-de="Standort">Location</p>
+          <p class="text-sm text-zinc-200 font-medium" data-en="On-site · Saarbrucken" data-de="Vor Ort · Saarbrucken">On-site · Saarbrucken</p>
+        </div>
+        <div>
+          <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5" data-en="Commitment" data-de="Umfang">Commitment</p>
+          <p class="text-sm text-zinc-200 font-medium" data-en="15 hrs / week" data-de="15 Std. / Woche">15 hrs / week</p>
+        </div>
+        <div>
+          <p class="text-xs text-zinc-500 uppercase tracking-wider mb-0.5" data-en="Type" data-de="Art">Type</p>
+          <p class="text-sm text-zinc-200 font-medium" data-en="Part-time · m/w/d" data-de="Teilzeit · m/w/d">Part-time · m/w/d</p>
+        </div>
+      </div>
+      <a href="#apply" class="block w-full text-center bg-white text-[#0a0f18] font-bold text-xs uppercase tracking-widest py-3 rounded-lg hover:bg-zinc-100 transition-colors mb-4"
+         data-en="Apply Now" data-de="Jetzt bewerben">Apply Now</a>
+      <p class="text-xs text-zinc-500 uppercase tracking-wider mb-2" data-en="Share" data-de="Teilen">Share</p>
+      <div class="flex gap-2">
+        <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://configai.co/hdl-engineer.html" target="_blank" rel="noopener noreferrer"
+           class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);" aria-label="Share on LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
+            <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+        </a>
+        <a href="https://x.com/intent/tweet?url=https://configai.co/hdl-engineer.html" target="_blank" rel="noopener noreferrer"
+           class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);" aria-label="Share on X">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.26 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+          </svg>
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ── Application Form ── -->
+  <section id="apply" class="relative z-[1] max-w-5xl mx-auto px-6 lg:px-10 pb-24 scroll-mt-20">
+    <div class="border-t border-white/5 pt-10 mb-8">
+      <h2 class="serif font-light text-2xl text-white mb-2" data-en="Submit your application" data-de="Bewerbung einreichen">Submit your application</h2>
+      <p class="text-sm text-zinc-400" data-en="CV and cover letter required. Files stored securely." data-de="Lebenslauf und Anschreiben erforderlich.">CV and cover letter required. Files stored securely.</p>
+    </div>
+    <form id="application-form" data-role-slug="hdl-engineer" novalidate>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-2 font-semibold" data-en="Full Name *" data-de="Vollstandiger Name *">Full Name *</label>
+          <input type="text" name="name" required placeholder="Jane Smith"
+            class="w-full px-3 py-2.5 text-sm text-white rounded-lg outline-none transition-colors"
+            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.25)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-2 font-semibold" data-en="Email *" data-de="E-Mail *">Email *</label>
+          <input type="email" name="email" required placeholder="jane@example.com"
+            class="w-full px-3 py-2.5 text-sm text-white rounded-lg outline-none transition-colors"
+            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.25)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-2 font-semibold" data-en="Applying For" data-de="Bewerbung fur">Applying For</label>
+          <div class="w-full px-3 py-2.5 text-sm text-zinc-400 rounded-lg flex items-center justify-between"
+               style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+            <span data-en="HDL Engineer" data-de="HDL Engineer">HDL Engineer</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-2 font-semibold" data-en="LinkedIn Profile (optional)" data-de="LinkedIn-Profil (optional)">LinkedIn Profile (optional)</label>
+          <input type="url" name="linkedin_url" placeholder="https://linkedin.com/in/..."
+            class="w-full px-3 py-2.5 text-sm text-white rounded-lg outline-none transition-colors"
+            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.25)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <label class="upload-zone block cursor-pointer rounded-xl p-5 text-center transition-colors" style="border:1.5px dashed rgba(255,255,255,0.15);">
+          <input type="file" name="cv" accept=".pdf,.doc,.docx" class="sr-only">
+          <svg class="mx-auto mb-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p class="text-xs font-semibold text-zinc-300 mb-1" data-en="CV / Resume" data-de="Lebenslauf">CV / Resume</p>
+          <p class="text-xs text-zinc-500 mb-2" data-en="PDF or DOC · max 10 MB" data-de="PDF oder DOC · max 10 MB">PDF or DOC · max 10 MB</p>
+          <span class="text-xs px-2 py-0.5 rounded" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);" data-en="REQUIRED" data-de="PFLICHTFELD">REQUIRED</span>
+          <span class="file-name block text-xs text-zinc-400 mt-2 truncate"></span>
+        </label>
+        <label class="upload-zone block cursor-pointer rounded-xl p-5 text-center transition-colors" style="border:1.5px dashed rgba(255,255,255,0.15);">
+          <input type="file" name="cover_letter" accept=".pdf,.doc,.docx" class="sr-only">
+          <svg class="mx-auto mb-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <p class="text-xs font-semibold text-zinc-300 mb-1" data-en="Cover Letter" data-de="Anschreiben">Cover Letter</p>
+          <p class="text-xs text-zinc-500 mb-2" data-en="PDF or DOC · max 10 MB" data-de="PDF oder DOC · max 10 MB">PDF or DOC · max 10 MB</p>
+          <span class="text-xs px-2 py-0.5 rounded" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);" data-en="REQUIRED" data-de="PFLICHTFELD">REQUIRED</span>
+          <span class="file-name block text-xs text-zinc-400 mt-2 truncate"></span>
+        </label>
+        <label class="upload-zone block cursor-pointer rounded-xl p-5 text-center transition-colors" style="border:1.5px dashed rgba(255,255,255,0.15);">
+          <input type="file" name="additional" accept=".pdf,.doc,.docx,.zip" multiple class="sr-only">
+          <svg class="mx-auto mb-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8">
+            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/>
+          </svg>
+          <p class="text-xs font-semibold text-zinc-300 mb-1" data-en="Additional Docs" data-de="Weitere Dokumente">Additional Docs</p>
+          <p class="text-xs text-zinc-500 mb-2" data-en="PDF, DOC or ZIP · max 20 MB" data-de="PDF, DOC oder ZIP · max 20 MB">PDF, DOC or ZIP · max 20 MB</p>
+          <span class="text-xs px-2 py-0.5 rounded" style="background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.08);" data-en="OPTIONAL" data-de="OPTIONAL">OPTIONAL</span>
+          <span class="file-name block text-xs text-zinc-400 mt-2 truncate"></span>
+        </label>
+      </div>
+      <p data-form-error class="text-sm text-red-400 min-h-[20px] mb-3"></p>
+      <div class="flex justify-end">
+        <button type="submit" data-submit-btn
+          class="bg-white text-[#0a0f18] font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg hover:bg-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          data-en="Submit Application" data-de="Bewerbung absenden">Submit Application</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="relative z-[1] w-full py-4 border-t border-white/10" style="background:#0a0f18;">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="flex flex-col items-start gap-1">
+        <img src="configai-logo.png" alt="ConfigAI" style="height:20px;object-fit:contain;">
+        <span class="text-zinc-400 text-xs">© 2025 ConfigAI. All rights reserved.</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-zinc-300 font-light">
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <a href="mailto:contact@configai.co" class="hover:text-white transition-colors">Contact</a>
+        <a href="careers.html" class="hover:text-white transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+      </div>
+      <div class="text-zinc-500 text-xs">contact@configai.co</div>
+    </div>
+  </footer>
+
+  <script src="careers.js" defer></script>
+  <script>
+    const canvas=document.getElementById('stars-canvas'),ctx=canvas.getContext('2d');
+    let W=window.innerWidth,H=window.innerHeight,particles=[],frameCount=0;
+    function makeParticle(){const a=Math.random()*Math.PI*2,s=Math.random()*0.25+0.05;return{x:Math.random()*W,y:Math.random()*H,vx:Math.cos(a)*s,vy:Math.sin(a)*s,size:Math.random()*1.8+0.4,opacity:Math.random()*0.5+0.12,glowing:Math.random()<0.25,twinkleOffset:Math.random()*Math.PI*2,twinkleSpeed:Math.random()*0.02+0.008};}
+    function initParticles(){W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H;particles=Array.from({length:180},makeParticle);}
+    function animate(){requestAnimationFrame(animate);ctx.clearRect(0,0,W,H);frameCount++;particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;const tw=p.glowing?0.5+0.5*Math.sin(frameCount*p.twinkleSpeed+p.twinkleOffset):1;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.opacity*tw})`;ctx.shadowBlur=p.glowing?6:0;ctx.shadowColor='rgba(255,255,255,0.6)';ctx.fill();});}
+    initParticles();animate();window.addEventListener('resize',initParticles);
+    function openMobileMenu(){const m=document.getElementById('mobile-menu');m.style.display='flex';m.style.flexDirection='column';document.body.style.overflow='hidden';}
+    function closeMobileMenu(){document.getElementById('mobile-menu').style.display='none';document.body.style.overflow='';}
+  </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careers · ConfigAI</title>
+  <link rel="icon" type="image/png" href="configai-icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background-color: #050810;
+      color: #ffffff;
+      font-family: 'Inter', system-ui, sans-serif;
+      scrollbar-width: none;
+    }
+    body::-webkit-scrollbar { display: none; }
+    .serif { font-family: 'Playfair Display', serif; }
+    #stars-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+    [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
+    [data-active="false"] { color: rgba(255,255,255,0.45); }
+  </style>
+</head>
+
+<body>
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- ── Navbar ── -->
+  <nav id="main-nav" class="fixed left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4"
+    style="top:0; background: rgba(10,15,24,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="flex items-center">
+      <a href="index.html"><img src="configai-logo.png" alt="ConfigAI" style="height:30px;object-fit:contain;opacity:0.95;"></a>
+    </div>
+    <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+      <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Challenge</a>
+      <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Platform</a>
+      <a href="careers.html" class="text-sm font-medium text-white transition-colors" style="border-bottom:1px solid rgba(255,255,255,0.4);">Careers</a>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <div class="flex items-center gap-1 text-xs font-semibold mr-1">
+        <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
+          class="px-2 py-1 rounded transition-colors text-white"
+          style="background:rgba(255,255,255,0.1);">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
+          class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
+      </div>
+      <a href="demo.html" class="text-sm text-zinc-300 font-medium hover:text-white transition-colors">Try Demo</a>
+      <a href="index.html"
+        class="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap">
+        Get Started
+      </a>
+    </div>
+    <button id="mobile-menu-btn" class="md:hidden p-1 text-white" onclick="openMobileMenu()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- ── Mobile Menu ── -->
+  <div id="mobile-menu" class="fixed left-0 right-0 z-[70] flex-col"
+    style="top:0; background:#07090f; border-bottom:1px solid rgba(255,255,255,0.08); display:none;">
+    <div class="flex items-center justify-between px-6 py-4">
+      <img src="configai-logo.png" alt="ConfigAI" style="height:30px;object-fit:contain;opacity:0.95;">
+      <button onclick="closeMobileMenu()" class="text-white p-1">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="flex flex-col px-6 pt-4">
+      <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Challenge</a>
+      <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Platform</a>
+      <a href="careers.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors" style="border-bottom:1px solid rgba(255,255,255,0.4); width:fit-content;"
+         data-en="Careers" data-de="Karriere">Careers</a>
+      <div class="border-t border-white/10 my-2"></div>
+      <a href="demo.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
+      <div class="flex items-center gap-2 py-[9px]">
+        <button id="lang-btn-en-mobile" onclick="applyLang('en'); closeMobileMenu();" data-active="true"
+          class="px-3 py-1.5 rounded text-sm font-semibold transition-colors"
+          style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button id="lang-btn-de-mobile" onclick="applyLang('de'); closeMobileMenu();" data-active="false"
+          class="px-3 py-1.5 rounded text-sm font-semibold transition-colors text-zinc-400 hover:text-white">DE</button>
+      </div>
+    </div>
+    <div class="px-6 pt-4 pb-6">
+      <a href="index.html"
+        class="w-full block text-center bg-white text-black px-6 py-3 rounded-xl font-medium text-base hover:bg-zinc-200 transition-colors">
+        Get Started
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Hero ── -->
+  <section class="relative z-[1] text-center px-6 pt-28 pb-16">
+    <p class="text-xs uppercase tracking-[0.2em] text-zinc-400 mb-4 font-light"
+       data-en="Careers at ConfigAI" data-de="Karriere bei ConfigAI">Careers at ConfigAI</p>
+    <h1 class="serif font-light text-white text-4xl md:text-5xl leading-tight mb-5"
+        data-en="Build the future of AI hardware."
+        data-de="Gestalte die Zukunft der KI-Hardware.">
+      Build the future of AI hardware.
+    </h1>
+    <p class="text-base text-zinc-300 font-light max-w-xl mx-auto leading-relaxed"
+       data-en="We're a small team solving a hard problem: turning ML models into FPGA hardware automatically. Based in Saarbrucken, backed by Max Planck Institute for Informatics and Google for Startups."
+       data-de="Wir sind ein kleines Team, das ein schwieriges Problem lost: ML-Modelle werden automatisch in FPGA-Hardware umgewandelt. Ansassig in Saarbrucken, unterstutzt vom Max-Planck-Institut fur Informatik und Google for Startups.">
+      We're a small team solving a hard problem: turning ML models into FPGA hardware automatically. Based in Saarbrucken, backed by Max Planck Institute for Informatics and Google for Startups.
+    </p>
+  </section>
+
+  <!-- ── Job Cards ── -->
+  <section class="relative z-[1] px-6 pb-24">
+    <div class="max-w-5xl mx-auto">
+      <p class="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-6"
+         data-en="Open Positions · 3 roles" data-de="Offene Stellen · 3 Rollen">Open Positions · 3 roles</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        <!-- Card: Compiler Engineer -->
+        <div class="rounded-2xl p-6 flex flex-col gap-4"
+             style="background:rgba(13,18,31,0.8);border:1px solid rgba(255,255,255,0.06);">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+               style="background:rgba(255,255,255,0.05);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="rgba(255,255,255,0.5)" stroke-width="1.8">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-white mb-2"
+                data-en="Compiler Engineer" data-de="Compiler Engineer">Compiler Engineer</h2>
+            <div class="flex flex-col gap-1.5 text-xs text-zinc-400">
+              <span data-en="15 hrs / week" data-de="15 Std. / Woche">15 hrs / week</span>
+              <span data-en="On-site · Saarbrucken" data-de="Vor Ort · Saarbrucken">On-site · Saarbrucken</span>
+              <span data-en="Part-time · m/w/d" data-de="Teilzeit · m/w/d">Part-time · m/w/d</span>
+            </div>
+          </div>
+          <p class="text-xs text-zinc-400 leading-relaxed flex-1"
+             data-en="Work on the compiler pipeline that maps ML computation graphs to FPGA primitives: parsing, IR transformations and code generation."
+             data-de="Arbeit an der Compiler-Pipeline, die ML-Berechnungsgraphen auf FPGA-Primitive abbildet: Parsing, IR-Transformationen und Code-Generierung.">
+            Work on the compiler pipeline that maps ML computation graphs to FPGA primitives: parsing, IR transformations and code generation.
+          </p>
+          <a href="compiler-engineer.html"
+             class="w-full text-center text-xs font-semibold uppercase tracking-widest py-2.5 rounded-lg transition-colors block"
+             style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);"
+             data-en="View role" data-de="Stelle ansehen">View role</a>
+        </div>
+
+        <!-- Card: ML Engineer -->
+        <div class="rounded-2xl p-6 flex flex-col gap-4"
+             style="background:rgba(13,18,31,0.8);border:1px solid rgba(255,255,255,0.06);">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+               style="background:rgba(255,255,255,0.05);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="rgba(255,255,255,0.5)" stroke-width="1.8">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-white mb-2"
+                data-en="ML Engineer" data-de="ML Engineer">ML Engineer</h2>
+            <div class="flex flex-col gap-1.5 text-xs text-zinc-400">
+              <span data-en="15 hrs / week" data-de="15 Std. / Woche">15 hrs / week</span>
+              <span data-en="On-site · Saarbrucken" data-de="Vor Ort · Saarbrucken">On-site · Saarbrucken</span>
+              <span data-en="Part-time · m/w/d" data-de="Teilzeit · m/w/d">Part-time · m/w/d</span>
+            </div>
+          </div>
+          <p class="text-xs text-zinc-400 leading-relaxed flex-1"
+             data-en="Bridge the gap between ML model architectures and hardware constraints: quantisation, operator fusion and hardware-aware model optimisation."
+             data-de="Bruckenbau zwischen ML-Modellarchitekturen und Hardware-Einschränkungen: Quantisierung, Operator-Fusion und hardware-bewusste Modelloptimierung.">
+            Bridge the gap between ML model architectures and hardware constraints: quantisation, operator fusion and hardware-aware model optimisation.
+          </p>
+          <a href="ml-engineer.html"
+             class="w-full text-center text-xs font-semibold uppercase tracking-widest py-2.5 rounded-lg transition-colors block"
+             style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);"
+             data-en="View role" data-de="Stelle ansehen">View role</a>
+        </div>
+
+        <!-- Card: HDL Engineer -->
+        <div class="rounded-2xl p-6 flex flex-col gap-4"
+             style="background:rgba(13,18,31,0.8);border:1px solid rgba(255,255,255,0.06);">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+               style="background:rgba(255,255,255,0.05);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="rgba(255,255,255,0.5)" stroke-width="1.8">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+              <line x1="12" y1="12" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="8" y2="16"/>
+              <line x1="16" y1="12" x2="16" y2="16"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-white mb-2"
+                data-en="HDL Engineer" data-de="HDL Engineer">HDL Engineer</h2>
+            <div class="flex flex-col gap-1.5 text-xs text-zinc-400">
+              <span data-en="15 hrs / week" data-de="15 Std. / Woche">15 hrs / week</span>
+              <span data-en="On-site · Saarbrucken" data-de="Vor Ort · Saarbrucken">On-site · Saarbrucken</span>
+              <span data-en="Part-time · m/w/d" data-de="Teilzeit · m/w/d">Part-time · m/w/d</span>
+            </div>
+          </div>
+          <p class="text-xs text-zinc-400 leading-relaxed flex-1"
+             data-en="Design and optimise the HDL templates and RTL modules that the compiler emits. Verilog/VHDL expertise required."
+             data-de="Entwurf und Optimierung der HDL-Templates und RTL-Module, die der Compiler generiert. Kenntnisse in Verilog/VHDL erforderlich.">
+            Design and optimise the HDL templates and RTL modules that the compiler emits. Verilog/VHDL expertise required.
+          </p>
+          <a href="hdl-engineer.html"
+             class="w-full text-center text-xs font-semibold uppercase tracking-widest py-2.5 rounded-lg transition-colors block"
+             style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);"
+             data-en="View role" data-de="Stelle ansehen">View role</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="relative z-[1] w-full py-4 border-t border-white/10" style="background:#0a0f18;">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="flex flex-col items-start gap-1">
+        <img src="configai-logo.png" alt="ConfigAI" style="height:20px;object-fit:contain;">
+        <span class="text-zinc-400 text-xs">© 2025 ConfigAI. All rights reserved.</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-zinc-300 font-light">
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <a href="mailto:contact@configai.co" class="hover:text-white transition-colors">Contact</a>
+        <a href="careers.html" class="hover:text-white transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+      </div>
+      <div class="text-zinc-500 text-xs">contact@configai.co</div>
+    </div>
+  </footer>
+
+  <script src="careers.js" defer></script>
+  <script>
+    // ─── Particles ────────────────────────────────────────────────────────────
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    const NUM = 180;
+    let W = window.innerWidth, H = window.innerHeight;
+    let particles = [];
+
+    function makeParticle() {
+      const angle = Math.random() * Math.PI * 2, speed = Math.random() * 0.25 + 0.05;
+      return {
+        x: Math.random() * W, y: Math.random() * H,
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        size: Math.random() * 1.8 + 0.4,
+        opacity: Math.random() * 0.5 + 0.12,
+        glowing: Math.random() < 0.25,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.02 + 0.008,
+      };
+    }
+    function initParticles() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W; canvas.height = H;
+      particles = Array.from({ length: NUM }, makeParticle);
+    }
+    let frameCount = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, W, H);
+      frameCount++;
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+        const twinkle = p.glowing ? 0.5 + 0.5 * Math.sin(frameCount * p.twinkleSpeed + p.twinkleOffset) : 1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.opacity * twinkle})`;
+        if (p.glowing) {
+          ctx.shadowBlur = 6; ctx.shadowColor = 'rgba(255,255,255,0.6)';
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        ctx.fill();
+      });
+    }
+    initParticles();
+    animate();
+    window.addEventListener('resize', initParticles);
+
+    // ─── Mobile Menu ─────────────────────────────────────────────────────────
+    function openMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.style.display = 'flex';
+      menu.style.flexDirection = 'column';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobile-menu').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  </script>
+</body>
+</html>

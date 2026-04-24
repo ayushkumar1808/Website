@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Received · ConfigAI</title>
+  <link rel="icon" type="image/png" href="configai-icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background-color: #050810; color: #ffffff; font-family: 'Inter', system-ui, sans-serif; scrollbar-width: none; height: 100%; }
+    body::-webkit-scrollbar { display: none; }
+    .serif { font-family: 'Playfair Display', serif; }
+    #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
+    [data-active="false"] { color: rgba(255,255,255,0.45); }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- ── Navbar ── -->
+  <nav class="fixed left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4"
+    style="top:0; background: rgba(10,15,24,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="flex items-center">
+      <a href="index.html"><img src="configai-logo.png" alt="ConfigAI" style="height:30px;object-fit:contain;opacity:0.95;"></a>
+    </div>
+    <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+      <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Challenge</a>
+      <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Platform</a>
+      <a href="careers.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <div class="flex items-center gap-1 text-xs font-semibold mr-1">
+        <button id="lang-btn-en" onclick="applyLang('en')" data-active="true" class="px-2 py-1 rounded transition-colors text-white" style="background:rgba(255,255,255,0.1);">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button id="lang-btn-de" onclick="applyLang('de')" data-active="false" class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
+      </div>
+      <a href="demo.html" class="text-sm text-zinc-300 font-medium hover:text-white transition-colors">Try Demo</a>
+      <a href="index.html" class="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap">Get Started</a>
+    </div>
+    <button class="md:hidden p-1 text-white" onclick="openMobileMenu()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- ── Mobile Menu ── -->
+  <div id="mobile-menu" class="fixed left-0 right-0 z-[70] flex-col"
+    style="top:0; background:#07090f; border-bottom:1px solid rgba(255,255,255,0.08); display:none;">
+    <div class="flex items-center justify-between px-6 py-4">
+      <img src="configai-logo.png" alt="ConfigAI" style="height:30px;object-fit:contain;opacity:0.95;">
+      <button onclick="closeMobileMenu()" class="text-white p-1">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="flex flex-col px-6 pt-4">
+      <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Challenge</a>
+      <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Platform</a>
+      <a href="careers.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+      <div class="border-t border-white/10 my-2"></div>
+      <a href="demo.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
+      <div class="flex items-center gap-2 py-[9px]">
+        <button onclick="applyLang('en'); closeMobileMenu();" data-active="true" class="px-3 py-1.5 rounded text-sm font-semibold" style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button onclick="applyLang('de'); closeMobileMenu();" data-active="false" class="px-3 py-1.5 rounded text-sm font-semibold text-zinc-400 hover:text-white">DE</button>
+      </div>
+    </div>
+    <div class="px-6 pt-4 pb-6">
+      <a href="index.html" class="w-full block text-center bg-white text-black px-6 py-3 rounded-xl font-medium text-base hover:bg-zinc-200 transition-colors">Get Started</a>
+    </div>
+  </div>
+
+  <!-- ── Main ── -->
+  <main class="relative z-[1] flex-1 flex flex-col items-center justify-center text-center px-6 py-32">
+    <div class="max-w-md mx-auto">
+      <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6"
+           style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h1 class="serif font-light text-white text-4xl mb-4"
+          data-en="Application received." data-de="Bewerbung eingegangen.">
+        Application received.
+      </h1>
+      <p class="text-zinc-300 font-light leading-relaxed mb-8 text-sm"
+         data-en="Thank you for applying to ConfigAI. We have sent a confirmation to your email address. We will review your application and get back to you within 5 business days. In the meantime, feel free to reach out at contact@configai.co."
+         data-de="Vielen Dank fur Ihre Bewerbung bei ConfigAI. Wir haben eine Bestatigung an Ihre E-Mail-Adresse gesendet. Wir werden Ihre Bewerbung prufen und uns innerhalb von 5 Werktagen melden.">
+        Thank you for applying to ConfigAI. We have sent a confirmation to your email address. We will review your application and get back to you within 5 business days. In the meantime, feel free to reach out at contact@configai.co.
+      </p>
+      <div class="flex gap-4 justify-center text-sm">
+        <a href="careers.html" class="text-zinc-300 hover:text-white transition-colors underline underline-offset-4"
+           data-en="View open roles" data-de="Offene Stellen ansehen">View open roles</a>
+        <span class="text-zinc-600">·</span>
+        <a href="index.html" class="text-zinc-300 hover:text-white transition-colors underline underline-offset-4"
+           data-en="Back to home" data-de="Zur Startseite">Back to home</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="relative z-[1] w-full py-4 border-t border-white/10" style="background:#0a0f18;">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="flex flex-col items-start gap-1">
+        <img src="configai-logo.png" alt="ConfigAI" style="height:20px;object-fit:contain;">
+        <span class="text-zinc-400 text-xs">© 2025 ConfigAI. All rights reserved.</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-zinc-300 font-light">
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <a href="mailto:contact@configai.co" class="hover:text-white transition-colors">Contact</a>
+        <a href="careers.html" class="hover:text-white transition-colors" data-en="Careers" data-de="Karriere">Careers</a>
+      </div>
+      <div class="text-zinc-500 text-xs">contact@configai.co</div>
+    </div>
+  </footer>
+
+  <script src="careers.js" defer></script>
+  <script>
+    const canvas=document.getElementById('stars-canvas'),ctx=canvas.getContext('2d');
+    let W=window.innerWidth,H=window.innerHeight,particles=[],frameCount=0;
+    function makeParticle(){const a=Math.random()*Math.PI*2,s=Math.random()*0.25+0.05;return{x:Math.random()*W,y:Math.random()*H,vx:Math.cos(a)*s,vy:Math.sin(a)*s,size:Math.random()*1.8+0.4,opacity:Math.random()*0.5+0.12,glowing:Math.random()<0.25,twinkleOffset:Math.random()*Math.PI*2,twinkleSpeed:Math.random()*0.02+0.008};}
+    function initParticles(){W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H;particles=Array.from({length:180},makeParticle);}
+    function animate(){requestAnimationFrame(animate);ctx.clearRect(0,0,W,H);frameCount++;particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;const tw=p.glowing?0.5+0.5*Math.sin(frameCount*p.twinkleSpeed+p.twinkleOffset):1;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.opacity*tw})`;ctx.shadowBlur=p.glowing?6:0;ctx.shadowColor='rgba(255,255,255,0.6)';ctx.fill();});}
+    initParticles();animate();window.addEventListener('resize',initParticles);
+    function openMobileMenu(){const m=document.getElementById('mobile-menu');m.style.display='flex';m.style.flexDirection='column';document.body.style.overflow='hidden';}
+    function closeMobileMenu(){document.getElementById('mobile-menu').style.display='none';document.body.style.overflow='';}
+  </script>
+</body>
+</html>
