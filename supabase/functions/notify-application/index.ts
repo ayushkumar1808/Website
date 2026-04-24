@@ -274,7 +274,7 @@ serve(async (req: Request) => {
   </p>
   <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.6;">
     If you have any questions in the meantime, feel free to reach out at
-    <a href="mailto:contact@configai.co" style="color:#4f6ef7;text-decoration:none;">contact@configai.co</a>.
+    <a href="mailto:ayush@configai.co" style="color:#4f6ef7;text-decoration:none;">ayush@configai.co</a>.
   </p>
   <p style="margin:0;font-size:15px;color:#333;">Best,<br>The ConfigAI Team</p>
 </div>
@@ -305,13 +305,13 @@ serve(async (req: Request) => {
 
     await Promise.all([
       sendEmail({
-        from: 'ConfigAI Careers <careers@configai.co>',
+        from: 'ConfigAI Careers <ayush@configai.co>',
         to: 'ayush@configai.co',
         subject: `New application: ${nameStr} for ${role}`,
         html: adminHtml,
       }),
       sendEmail({
-        from: 'ConfigAI Careers <careers@configai.co>',
+        from: 'ConfigAI Careers <ayush@configai.co>',
         to: emailStr,
         subject: `We received your application for ${role} at ConfigAI`,
         html: applicantHtml,
