@@ -31,7 +31,7 @@ function safeHref(url: string, style: string): string {
       return `<a href="${esc(url)}" style="${style}">${esc(url)}</a>`
     }
   } catch {
-    // invalid URL — fall through to plain text
+    // invalid URL: fall through to plain text
   }
   return esc(url)
 }
@@ -40,6 +40,8 @@ function safeHref(url: string, style: string): string {
 const BUCKET = 'applications'
 /** Signed URL TTL in seconds (24 hours) */
 const SIGNED_URL_EXPIRES = 86400
+/** Maximum number of additional documents allowed per application */
+const MAX_ADDITIONAL_DOCS = 10
 
 /** Role slug → display name map */
 const ROLE_MAP: Record<string, string> = {
@@ -98,7 +100,13 @@ serve(async (req: Request) => {
   }
 
   try {
-    const body = await req.json()
+    let body: Record<string, unknown>
+    try {
+      body = await req.json()
+    } catch {
+      return jsonResponse({ error: 'Invalid JSON body' }, 400, allowedOrigin)
+    }
+
     const {
       name,
       email,
@@ -110,7 +118,7 @@ serve(async (req: Request) => {
     } = body
 
     // -------------------------------------------------------------------------
-    // Validate required fields
+    // Validate required fields and types
     // -------------------------------------------------------------------------
     const missing: string[] = []
     if (!name) missing.push('name')
@@ -123,29 +131,38 @@ serve(async (req: Request) => {
       return jsonResponse({ error: `Missing required fields: ${missing.join(', ')}` }, 400, allowedOrigin)
     }
 
-    if (!isValidEmail(String(email))) {
+    // Coerce all string fields early so downstream code always has strings
+    const nameStr = String(name)
+    const emailStr = String(email)
+    const roleSlugStr = String(role_slug)
+    const cvPathStr = String(cv_path)
+    const coverLetterPathStr = String(cover_letter_path)
+
+    if (!isValidEmail(emailStr)) {
       return jsonResponse({ error: 'Invalid email address' }, 400, allowedOrigin)
     }
 
     // -------------------------------------------------------------------------
     // Resolve role display name
     // -------------------------------------------------------------------------
-    const role = ROLE_MAP[role_slug as string]
+    const role = ROLE_MAP[roleSlugStr]
     if (!role) {
-      return jsonResponse({ error: `Unknown role_slug: ${role_slug}` }, 400, allowedOrigin)
+      return jsonResponse({ error: `Unknown role_slug: ${roleSlugStr}` }, 400, allowedOrigin)
     }
 
     // -------------------------------------------------------------------------
-    // Supabase client (service role — needed for signed URLs + DB insert)
+    // Supabase client (service role: needed for signed URLs + DB insert)
     // -------------------------------------------------------------------------
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-    // Normalise additional_paths to a flat string array
-    const safeAdditionalPaths: string[] = Array.isArray(additional_paths)
-      ? additional_paths.filter((p): p is string => typeof p === 'string')
-      : []
+    // Normalise additional_paths to a capped flat string array
+    const safeAdditionalPaths: string[] = (
+      Array.isArray(additional_paths)
+        ? additional_paths.filter((p): p is string => typeof p === 'string')
+        : []
+    ).slice(0, MAX_ADDITIONAL_DOCS)
 
     // -------------------------------------------------------------------------
     // Generate 24-hour signed URLs for all uploaded files
@@ -161,8 +178,8 @@ serve(async (req: Request) => {
     }
 
     const [cvUrl, coverLetterUrl, ...additionalUrls] = await Promise.all([
-      getSignedUrl(cv_path as string),
-      getSignedUrl(cover_letter_path as string),
+      getSignedUrl(cvPathStr),
+      getSignedUrl(coverLetterPathStr),
       ...safeAdditionalPaths.map((p) => getSignedUrl(p)),
     ])
 
@@ -170,13 +187,13 @@ serve(async (req: Request) => {
     // Insert row into applicants table
     // -------------------------------------------------------------------------
     const { error: dbError } = await supabase.from('applicants').insert({
-      name,
-      email,
+      name: nameStr,
+      email: emailStr,
       role,
-      role_slug,
-      linkedin_url: linkedin_url || null,
-      cv_path,
-      cover_letter_path,
+      role_slug: roleSlugStr,
+      linkedin_url: linkedin_url ? String(linkedin_url) : null,
+      cv_path: cvPathStr,
+      cover_letter_path: coverLetterPathStr,
       additional_paths: safeAdditionalPaths.length > 0 ? safeAdditionalPaths : null,
     })
 
@@ -191,7 +208,7 @@ serve(async (req: Request) => {
     const resendApiKey = Deno.env.get('RESEND_API_KEY')!
 
     function docLink(label: string, url: string): string {
-      return `<li style="margin:6px 0;"><a href="${url}" style="color:#4f6ef7;text-decoration:none;">${label}</a></li>`
+      return `<li style="margin:6px 0;"><a href="${esc(url)}" style="color:#4f6ef7;text-decoration:none;">${label}</a></li>`
     }
 
     const additionalDocLinks = safeAdditionalPaths
@@ -217,12 +234,12 @@ serve(async (req: Request) => {
   <table style="width:100%;border-collapse:collapse;">
     <tr>
       <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:13px;color:#999;width:120px;">Name</td>
-      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#0a0f18;">${esc(name as string)}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#0a0f18;">${esc(nameStr)}</td>
     </tr>
     <tr>
       <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:13px;color:#999;">Email</td>
       <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#0a0f18;">
-        <a href="mailto:${esc(email as string)}" style="color:#4f6ef7;text-decoration:none;">${esc(email as string)}</a>
+        <a href="mailto:${esc(emailStr)}" style="color:#4f6ef7;text-decoration:none;">${esc(emailStr)}</a>
       </td>
     </tr>
     <tr>
@@ -250,7 +267,7 @@ serve(async (req: Request) => {
     const applicantHtml = `
 <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#f9f9f9;border-radius:8px;">
   <h2 style="margin:0 0 16px;font-size:18px;color:#0a0f18;">Application received</h2>
-  <p style="margin:0 0 16px;font-size:15px;color:#0a0f18;">Hi ${esc(name as string)},</p>
+  <p style="margin:0 0 16px;font-size:15px;color:#0a0f18;">Hi ${esc(nameStr)},</p>
   <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.6;">
     Thank you for applying for the <strong>${esc(role)}</strong> position at ConfigAI.
     We've received your application and will review it within 5 business days.
@@ -290,12 +307,12 @@ serve(async (req: Request) => {
       sendEmail({
         from: 'ConfigAI Careers <careers@configai.co>',
         to: 'ayush@configai.co',
-        subject: `New application: ${esc(name as string)} for ${esc(role)}`,
+        subject: `New application: ${nameStr} for ${role}`,
         html: adminHtml,
       }),
       sendEmail({
         from: 'ConfigAI Careers <careers@configai.co>',
-        to: String(email),
+        to: emailStr,
         subject: `We received your application for ${role} at ConfigAI`,
         html: applicantHtml,
       }),
@@ -307,10 +324,6 @@ serve(async (req: Request) => {
     return jsonResponse({ success: true }, 200, allowedOrigin)
   } catch (err) {
     console.error('notify-application error:', err)
-    return jsonResponse(
-      { error: err instanceof Error ? err.message : 'Internal server error' },
-      500,
-      allowedOrigin,
-    )
+    return jsonResponse({ error: 'Internal server error' }, 500, allowedOrigin)
   }
 })
