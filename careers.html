@@ -22,19 +22,12 @@
     }
     body::-webkit-scrollbar { display: none; }
     .serif { font-family: 'Playfair Display', serif; }
-    #stars-canvas {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none; z-index: 0;
-    }
     [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
     [data-active="false"] { color: rgba(255,255,255,0.45); }
   </style>
 </head>
 
 <body>
-  <canvas id="stars-canvas"></canvas>
-
   <!-- ── Navbar ── -->
   <nav id="main-nav" class="fixed left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4"
     style="top:0; background: rgba(10,15,24,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
@@ -47,14 +40,6 @@
       <a href="careers.html" class="text-sm font-medium text-white transition-colors" style="border-bottom:1px solid rgba(255,255,255,0.4);">Careers</a>
     </div>
     <div class="hidden md:flex items-center gap-3">
-      <div class="flex items-center gap-1 text-xs font-semibold mr-1">
-        <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
-          class="px-2 py-1 rounded transition-colors text-white"
-          style="background:rgba(255,255,255,0.1);">EN</button>
-        <span class="text-zinc-600">/</span>
-        <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
-          class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
-      </div>
       <a href="demo.html" class="text-sm text-zinc-300 font-medium hover:text-white transition-colors">Try Demo</a>
       <a href="index.html"
         class="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap">
@@ -86,14 +71,6 @@
          data-en="Careers" data-de="Karriere">Careers</a>
       <div class="border-t border-white/10 my-2"></div>
       <a href="demo.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
-      <div class="flex items-center gap-2 py-[9px]">
-        <button id="lang-btn-en-mobile" onclick="applyLang('en'); closeMobileMenu();" data-active="true"
-          class="px-3 py-1.5 rounded text-sm font-semibold transition-colors"
-          style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
-        <span class="text-zinc-600">/</span>
-        <button id="lang-btn-de-mobile" onclick="applyLang('de'); closeMobileMenu();" data-active="false"
-          class="px-3 py-1.5 rounded text-sm font-semibold transition-colors text-zinc-400 hover:text-white">DE</button>
-      </div>
     </div>
     <div class="px-6 pt-4 pb-6">
       <a href="index.html"
@@ -118,6 +95,19 @@
       We're a small team solving a hard problem: turning ML models into FPGA hardware automatically. Based in Saarbrucken, backed by Max Planck Institute for Informatics and Google for Startups.
     </p>
   </section>
+
+  <!-- ── Language Toggle ── -->
+  <div class="relative z-[1] flex justify-center pb-2" style="margin-top:-8px;">
+    <div class="flex items-center gap-1 text-xs font-semibold"
+         style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:4px 6px;">
+      <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
+        class="px-2 py-1 rounded transition-colors"
+        style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
+      <span class="text-zinc-600">/</span>
+      <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
+        class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
+    </div>
+  </div>
 
   <!-- ── Job Cards ── -->
   <section class="relative z-[1] px-6 pb-24">
@@ -225,6 +215,27 @@
     </div>
   </section>
 
+  <!-- ── Point of Contact ── -->
+  <section class="relative z-[1] px-6 pb-20">
+    <div class="max-w-5xl mx-auto">
+      <div class="rounded-2xl p-8 flex items-center gap-6"
+           style="background:rgba(13,18,31,0.8);border:1px solid rgba(255,255,255,0.06);">
+        <img src="ayush.jpg" alt="Ayush Kumar"
+             style="width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0;filter:grayscale(20%);">
+        <div>
+          <p class="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-1"
+             data-en="Point of contact" data-de="Ansprechpartner">Point of contact</p>
+          <p class="text-white font-medium text-sm mb-0.5">Ayush Kumar</p>
+          <p class="text-sm text-zinc-400">Co-founder, ConfigAI</p>
+          <a href="mailto:ayush@configai.co"
+             class="text-sm text-zinc-300 hover:text-white transition-colors mt-1 inline-block">
+            ayush@configai.co
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── Footer ── -->
   <footer class="relative z-[1] w-full py-4 border-t border-white/10" style="background:#0a0f18;">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -244,55 +255,6 @@
 
   <script src="careers.js" defer></script>
   <script>
-    // ─── Particles ────────────────────────────────────────────────────────────
-    const canvas = document.getElementById('stars-canvas');
-    const ctx = canvas.getContext('2d');
-    const NUM = 180;
-    let W = window.innerWidth, H = window.innerHeight;
-    let particles = [];
-
-    function makeParticle() {
-      const angle = Math.random() * Math.PI * 2, speed = Math.random() * 0.25 + 0.05;
-      return {
-        x: Math.random() * W, y: Math.random() * H,
-        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-        size: Math.random() * 1.8 + 0.4,
-        opacity: Math.random() * 0.5 + 0.12,
-        glowing: Math.random() < 0.25,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * 0.02 + 0.008,
-      };
-    }
-    function initParticles() {
-      W = window.innerWidth; H = window.innerHeight;
-      canvas.width = W; canvas.height = H;
-      particles = Array.from({ length: NUM }, makeParticle);
-    }
-    let frameCount = 0;
-    function animate() {
-      requestAnimationFrame(animate);
-      ctx.clearRect(0, 0, W, H);
-      frameCount++;
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-        const twinkle = p.glowing ? 0.5 + 0.5 * Math.sin(frameCount * p.twinkleSpeed + p.twinkleOffset) : 1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${p.opacity * twinkle})`;
-        if (p.glowing) {
-          ctx.shadowBlur = 6; ctx.shadowColor = 'rgba(255,255,255,0.6)';
-        } else {
-          ctx.shadowBlur = 0;
-        }
-        ctx.fill();
-      });
-    }
-    initParticles();
-    animate();
-    window.addEventListener('resize', initParticles);
-
     // ─── Mobile Menu ─────────────────────────────────────────────────────────
     function openMobileMenu() {
       const menu = document.getElementById('mobile-menu');

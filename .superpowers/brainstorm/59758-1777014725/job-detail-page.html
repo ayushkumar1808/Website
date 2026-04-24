@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Job Detail Page · ConfigAI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080b14;
+      color: #fff;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .frame-label {
+      background: #1a1f2e;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .frame-label span { color: rgba(255,255,255,0.7); font-weight: 600; }
+
+    .flow-diagram {
+      max-width: 900px;
+      margin: 20px auto 0;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      background: rgba(13,18,31,0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+    .flow-step.active {
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+    .flow-arrow { color: rgba(255,255,255,0.25); font-size: 14px; }
+
+    .page-preview {
+      max-width: 900px;
+      margin: 16px auto 40px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #050810;
+    }
+
+    /* NAV */
+    .mock-nav {
+      height: 52px;
+      background: rgba(10,15,24,0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+    .mock-logo { width: 80px; height: 14px; background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .mock-nav-links { display: flex; gap: 20px; align-items: center; }
+    .mock-nav-link { width: 52px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 3px; }
+    .mock-nav-cta { width: 72px; height: 28px; background: #fff; border-radius: 6px; opacity: 0.9; }
+    .lang-toggle {
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+    }
+    .lang-toggle .active { color: #fff; }
+    .lang-toggle .sep { color: rgba(255,255,255,0.25); }
+
+    /* BREADCRUMB */
+    .breadcrumb {
+      padding: 16px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+    }
+    .breadcrumb a { color: rgba(255,255,255,0.35); text-decoration: none; }
+    .breadcrumb a:hover { color: rgba(255,255,255,0.6); }
+    .breadcrumb .sep { font-size: 10px; }
+    .breadcrumb .current { color: rgba(255,255,255,0.6); }
+
+    /* MAIN LAYOUT: two columns */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 0;
+      padding: 36px 32px 0;
+      align-items: start;
+    }
+
+    /* LEFT: job content */
+    .job-content {}
+
+    .job-title {
+      font-size: 30px;
+      font-weight: 300;
+      font-family: Georgia, serif;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 28px;
+    }
+
+    .job-section {
+      margin-bottom: 28px;
+    }
+    .job-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+    }
+    .job-section p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.75;
+    }
+    .job-section p strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+    }
+    .job-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .job-list li {
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.65;
+      padding-left: 16px;
+      position: relative;
+    }
+    .job-list li::before {
+      content: '·';
+      position: absolute;
+      left: 4px;
+      color: rgba(255,255,255,0.25);
+    }
+    .job-list li strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 28px 0;
+    }
+
+    /* RIGHT: sidebar */
+    .job-sidebar {
+      position: sticky;
+      top: 20px;
+      padding-left: 28px;
+      border-left: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sidebar-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .sidebar-meta-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .sidebar-meta-icon {
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .sidebar-meta-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .sidebar-meta-value {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+    }
+
+    .apply-btn {
+      width: 100%;
+      height: 40px;
+      background: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0a0f18;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    .apply-btn:hover { background: #e4e4e4; }
+
+    .share-row {
+      margin-top: 20px;
+    }
+    .share-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .share-icons {
+      display: flex;
+      gap: 10px;
+    }
+    .share-icon {
+      width: 30px; height: 30px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* FORM ANCHOR DIVIDER */
+    .form-anchor-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 32px;
+      margin: 8px 0;
+    }
+    .form-anchor-line { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+    .form-anchor-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* APPLICATION FORM */
+    .form-section {
+      padding: 36px 32px 44px;
+      background: rgba(13,18,31,0.4);
+    }
+    .form-header {
+      margin-bottom: 28px;
+    }
+    .form-title {
+      font-size: 20px;
+      font-weight: 300;
+      font-family: Georgia, serif;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .form-subtitle {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .field-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      font-weight: 600;
+    }
+    .mock-input {
+      height: 38px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+    }
+    .role-prefilled {
+      height: 38px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      display: flex; align-items: center; padding: 0 12px;
+      font-size: 12px; color: rgba(255,255,255,0.5);
+    }
+    .role-prefilled .lock-icon { margin-left: auto; opacity: 0.25; }
+
+    .upload-zones {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .upload-zone {
+      border: 1.5px dashed rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      text-align: center;
+    }
+    .upload-zone.required { border-color: rgba(255,255,255,0.15); }
+    .upload-zone-title { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.65); }
+    .upload-zone-sub { font-size: 10px; color: rgba(255,255,255,0.25); }
+    .upload-badge {
+      font-size: 9px; background: rgba(255,255,255,0.07); border-radius: 4px;
+      padding: 2px 6px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em;
+    }
+    .upload-badge.req { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+    .submit-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+    .mock-submit {
+      height: 40px; width: 180px;
+      background: #fff; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #0a0f18;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    /* FOOTER */
+    .mock-footer {
+      height: 52px;
+      background: #0a0f18;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+    .mock-footer-logo { width: 60px; height: 10px; background: rgba(255,255,255,0.12); border-radius: 3px; }
+    .mock-footer-links { display: flex; gap: 16px; }
+    .mock-footer-link { width: 40px; height: 8px; background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+    /* Annotation pill */
+    .annotation {
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 10px;
+      color: rgba(147,197,253,0.85);
+      display: inline-block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="frame-label">
+    <span>compiler-engineer.html · job detail page</span>
+    <span style="color:rgba(255,255,255,0.3);">One page per role · full description + inline form</span>
+  </div>
+
+  <!-- PAGE FLOW -->
+  <div class="flow-diagram">
+    <div class="flow-step">careers.html<br><span style="font-size:10px;color:rgba(255,255,255,0.4);">3 job cards</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step active">compiler-engineer.html<br><span style="font-size:10px;color:rgba(255,255,255,0.55);">full posting + form ← you are here</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">thank-you.html<br><span style="font-size:10px;color:rgba(255,255,255,0.4);">after submit</span></div>
+    <div style="margin-left:8px;font-size:10px;color:rgba(255,255,255,0.2);">(same pattern for ml-engineer.html · hdl-engineer.html)</div>
+  </div>
+
+  <div class="page-preview">
+
+    <!-- NAV -->
+    <div class="mock-nav">
+      <div class="mock-logo"></div>
+      <div class="mock-nav-links">
+        <div class="mock-nav-link"></div>
+        <div class="mock-nav-link"></div>
+        <div class="mock-nav-link" style="width:44px;background:rgba(255,255,255,0.2);"></div>
+        <div class="lang-toggle"><span class="active">EN</span><span class="sep">/</span><span style="opacity:0.4;">DE</span></div>
+      </div>
+      <div class="mock-nav-cta"></div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="#">Careers</a>
+      <span class="sep">›</span>
+      <span class="current">Compiler Engineer</span>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="main-layout">
+
+      <!-- LEFT: job content -->
+      <div class="job-content">
+
+        <div class="job-title">Compiler Engineer</div>
+
+        <div class="job-section">
+          <div class="job-section-title">About ConfigAI</div>
+          <p>ConfigAI is building a compiler that turns ML models into FPGA-ready hardware automatically, cutting development time from months to minutes. We are a small team based in Saarbrücken, backed by the Max Planck Institute for Informatics and Google for Startups. Our mission is to make FPGA deployment accessible to every ML engineer.</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="job-section">
+          <div class="job-section-title">About the Role</div>
+          <p>We are looking for a <strong>Compiler Engineer</strong> to work on the core pipeline that maps ML computation graphs to FPGA primitives. You will work directly on graph-level IR transformations, operator scheduling and hardware code generation. This is a <strong>15 hrs/week, on-site role</strong> in Saarbrücken, open to students and professionals (m/w/d).</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="job-section">
+          <div class="job-section-title">Key Responsibilities</div>
+          <ul class="job-list">
+            <li>Design and implement <strong>IR transformations</strong> that map high-level ML ops to hardware-friendly primitives.</li>
+            <li>Build and maintain the <strong>operator scheduling and placement</strong> passes in the compiler pipeline.</li>
+            <li>Contribute to the <strong>code generation backend</strong> that emits Verilog/VHDL from the compiler IR.</li>
+            <li>Collaborate with ML and HDL engineers to ensure <strong>correctness and performance</strong> of compiled hardware.</li>
+            <li>Write <strong>unit and integration tests</strong> for new compiler passes and regression coverage.</li>
+            <li>Profile and optimise <strong>compile-time performance</strong> for large model graphs.</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="job-section">
+          <div class="job-section-title">Required Skills & Experience</div>
+          <ul class="job-list">
+            <li>Strong fundamentals in <strong>compiler design</strong>: IR, passes, transformations and code generation.</li>
+            <li>Proficiency in <strong>Python or C++</strong> (our compiler pipeline uses both).</li>
+            <li>Understanding of <strong>ML computation graphs</strong> and common operator patterns (conv, matmul, attention).</li>
+            <li>Experience with <strong>MLIR, LLVM or a similar compiler framework</strong> is a strong plus.</li>
+            <li>Comfortable working in a <strong>fast-moving research-to-product</strong> environment.</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="job-section">
+          <div class="job-section-title">Preferred Skills (Nice to Have)</div>
+          <ul class="job-list">
+            <li>Familiarity with <strong>FPGA architecture</strong>: LUTs, DSPs, BRAMs and routing constraints.</li>
+            <li>Experience with <strong>hardware description languages</strong> (Verilog or VHDL).</li>
+            <li>Background in <strong>quantisation and operator fusion</strong> techniques for inference.</li>
+            <li>Knowledge of <strong>HLS (High-Level Synthesis)</strong> toolchains such as Xilinx Vitis HLS.</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="job-section">
+          <div class="job-section-title">Why Join Us?</div>
+          <ul class="job-list">
+            <li>Work on a <strong>genuinely hard technical problem</strong> at the intersection of ML and hardware.</li>
+            <li>Small team: your contributions will have <strong>direct, visible impact</strong> on the product.</li>
+            <li>Research environment: direct access to expertise at the <strong>Max Planck Institute for Informatics</strong>.</li>
+            <li>Flexible 15 hrs/week commitment — ideal for <strong>students or researchers</strong> pursuing parallel work.</li>
+          </ul>
+        </div>
+
+        <div style="height:8px;"></div>
+        <div class="annotation">↓ "Apply Now" in the sidebar scrolls to the form below</div>
+
+      </div><!-- /job-content -->
+
+      <!-- RIGHT: sidebar -->
+      <div class="job-sidebar">
+        <div class="sidebar-meta">
+
+          <div class="sidebar-meta-item">
+            <div class="sidebar-meta-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div>
+              <div class="sidebar-meta-label">Department</div>
+              <div class="sidebar-meta-value">Engineering</div>
+            </div>
+          </div>
+
+          <div class="sidebar-meta-item">
+            <div class="sidebar-meta-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="sidebar-meta-label">Location</div>
+              <div class="sidebar-meta-value">On-site · Saarbrücken</div>
+            </div>
+          </div>
+
+          <div class="sidebar-meta-item">
+            <div class="sidebar-meta-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="sidebar-meta-label">Commitment</div>
+              <div class="sidebar-meta-value">15 hrs / week</div>
+            </div>
+          </div>
+
+          <div class="sidebar-meta-item">
+            <div class="sidebar-meta-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            </div>
+            <div>
+              <div class="sidebar-meta-label">Type</div>
+              <div class="sidebar-meta-value">Part-time · m/w/d</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="apply-btn">Apply Now</div>
+
+        <div class="share-row">
+          <div class="share-label">Share</div>
+          <div class="share-icons">
+            <div class="share-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(255,255,255,0.45)"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <div class="share-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(255,255,255,0.45)"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sidebar -->
+
+    </div><!-- /main-layout -->
+
+    <!-- FORM ANCHOR DIVIDER -->
+    <div class="form-anchor-divider" style="margin-top:36px;">
+      <div class="form-anchor-line"></div>
+      <div class="form-anchor-label">Apply for this role</div>
+      <div class="form-anchor-line"></div>
+    </div>
+
+    <!-- APPLICATION FORM -->
+    <div class="form-section">
+      <div class="form-header">
+        <div class="form-title">Submit your application</div>
+        <div class="form-subtitle">Role pre-filled. CV and cover letter required. All files stored securely.</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <div class="field-label">Full Name *</div>
+          <div class="mock-input"></div>
+        </div>
+        <div class="form-field">
+          <div class="field-label">Email *</div>
+          <div class="mock-input"></div>
+        </div>
+        <div class="form-field">
+          <div class="field-label">Applying for</div>
+          <div class="role-prefilled">
+            Compiler Engineer
+            <span class="lock-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </span>
+          </div>
+        </div>
+        <div class="form-field">
+          <div class="field-label">LinkedIn Profile</div>
+          <div class="mock-input"></div>
+        </div>
+      </div>
+
+      <div class="upload-zones">
+        <div class="upload-zone required">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="upload-zone-title">CV / Résumé</div>
+          <div class="upload-zone-sub">PDF or DOC · max 10 MB</div>
+          <div class="upload-badge req">REQUIRED</div>
+        </div>
+        <div class="upload-zone required">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div class="upload-zone-title">Cover Letter</div>
+          <div class="upload-zone-sub">PDF or DOC · max 10 MB</div>
+          <div class="upload-badge req">REQUIRED</div>
+        </div>
+        <div class="upload-zone">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="upload-zone-title">Additional Docs</div>
+          <div class="upload-zone-sub">Portfolio, transcripts · max 20 MB</div>
+          <div class="upload-badge">OPTIONAL</div>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <div class="mock-submit">Submit Application</div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="mock-footer">
+      <div class="mock-footer-logo"></div>
+      <div class="mock-footer-links">
+        <div class="mock-footer-link"></div>
+        <div class="mock-footer-link"></div>
+        <div class="mock-footer-link" style="width:48px;background:rgba(255,255,255,0.15);"></div>
+        <div class="mock-footer-link"></div>
+      </div>
+    </div>
+
+  </div><!-- /page-preview -->
+
+</body>
+</html>

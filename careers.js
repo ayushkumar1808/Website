@@ -10,10 +10,10 @@ function applyLang(lang) {
   })
   document.querySelectorAll('.lang-en').forEach(el => el.classList.toggle('hidden', lang !== 'en'))
   document.querySelectorAll('.lang-de').forEach(el => el.classList.toggle('hidden', lang !== 'de'))
-  const btnEn = document.getElementById('lang-btn-en')
-  const btnDe = document.getElementById('lang-btn-de')
-  if (btnEn) btnEn.setAttribute('data-active', lang === 'en' ? 'true' : 'false')
-  if (btnDe) btnDe.setAttribute('data-active', lang === 'de' ? 'true' : 'false')
+  document.getElementById('lang-btn-en')?.setAttribute('data-active', lang === 'en' ? 'true' : 'false')
+  document.getElementById('lang-btn-de')?.setAttribute('data-active', lang === 'de' ? 'true' : 'false')
+  document.getElementById('lang-btn-en-mobile')?.setAttribute('data-active', lang === 'en' ? 'true' : 'false')
+  document.getElementById('lang-btn-de-mobile')?.setAttribute('data-active', lang === 'de' ? 'true' : 'false')
   localStorage.setItem('lang', lang)
 }
 

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Careers Page Layout · ConfigAI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080b14;
+      color: #fff;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Frame label ── */
+    .frame-label {
+      background: #1a1f2e;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .frame-label span { color: rgba(255,255,255,0.7); font-weight: 600; }
+
+    /* ── Scrollable preview ── */
+    .page-preview {
+      max-width: 860px;
+      margin: 24px auto;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #050810;
+    }
+
+    /* NAV */
+    .mock-nav {
+      height: 52px;
+      background: rgba(10,15,24,0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+    .mock-logo { width: 80px; height: 14px; background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .mock-nav-links { display: flex; gap: 20px; align-items: center; }
+    .mock-nav-link { width: 52px; height: 10px; background: rgba(255,255,255,0.12); border-radius: 3px; }
+    .mock-nav-cta { width: 72px; height: 28px; background: #fff; border-radius: 6px; opacity: 0.9; }
+    .lang-toggle {
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .lang-toggle .active { color: #fff; }
+    .lang-toggle .sep { color: rgba(255,255,255,0.25); }
+
+    /* HERO */
+    .mock-hero {
+      text-align: center;
+      padding: 56px 32px 44px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 16px;
+    }
+    .hero-title {
+      font-size: 36px;
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      font-family: Georgia, serif;
+    }
+    .hero-title em { font-style: italic; }
+    .hero-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      max-width: 460px;
+      margin: 0 auto;
+      font-weight: 300;
+      line-height: 1.65;
+    }
+
+    /* JOB CARDS GRID */
+    .jobs-section {
+      padding: 40px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 20px;
+    }
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .job-card {
+      background: rgba(13,18,31,0.8);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+    .job-card:hover { border-color: rgba(255,255,255,0.14); }
+    .job-icon {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .job-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
+    }
+    .job-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .job-meta-item {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .job-meta-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+    }
+    .job-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    .job-apply-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    /* APPLICATION FORM SECTION */
+    .form-section {
+      padding: 44px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .form-header {
+      margin-bottom: 28px;
+    }
+    .form-title {
+      font-size: 22px;
+      font-weight: 300;
+      font-family: Georgia, serif;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .form-subtitle {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-field.full { grid-column: 1 / -1; }
+    .field-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      font-weight: 600;
+    }
+    .mock-input {
+      height: 38px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+    }
+    .mock-select {
+      height: 38px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      display: flex; align-items: center; padding: 0 12px;
+      font-size: 12px; color: rgba(255,255,255,0.45);
+      position: relative;
+    }
+    .mock-select::after {
+      content: '▾';
+      position: absolute; right: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* Upload zones */
+    .upload-zones {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .upload-zone {
+      border: 1.5px dashed rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      text-align: center;
+    }
+    .upload-zone.required { border-color: rgba(255,255,255,0.15); }
+    .upload-zone-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.65);
+    }
+    .upload-zone-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+    }
+    .upload-badge {
+      font-size: 9px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.06em;
+    }
+    .upload-badge.req { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+    .submit-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .mock-submit {
+      height: 40px;
+      width: 160px;
+      background: #fff;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0a0f18;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* FOOTER */
+    .mock-footer {
+      height: 52px;
+      background: #0a0f18;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+    .mock-footer-logo { width: 60px; height: 10px; background: rgba(255,255,255,0.12); border-radius: 3px; }
+    .mock-footer-links { display: flex; gap: 16px; }
+    .mock-footer-link { width: 40px; height: 8px; background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+    /* Scroll anchor label */
+    .scroll-anchor-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.08em;
+      margin: 0 32px 16px;
+    }
+    .scroll-anchor-line {
+      flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+    }
+
+    /* Annotations */
+    .annotation {
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 10px;
+      color: rgba(147,197,253,0.85);
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+
+    /* Outer page labels */
+    .outer { max-width: 860px; margin: 0 auto 8px; padding: 0 4px; }
+    .outer h3 { font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 2px; }
+    .outer p { font-size: 11px; color: rgba(255,255,255,0.3); }
+  </style>
+</head>
+<body>
+
+  <div class="frame-label">
+    <span>careers.html · page layout mockup</span>
+    <span style="color:rgba(255,255,255,0.3);">Dark theme · Inter + Playfair · matches configai.co</span>
+  </div>
+
+  <div style="padding: 0 16px 40px;">
+
+    <div class="outer" style="margin-top:20px;">
+      <h3>careers.html</h3>
+      <p>Separate page, linked from nav + footer · standard scroll (no snap) · EN/DE toggle in nav</p>
+    </div>
+
+    <div class="page-preview">
+
+      <!-- NAV -->
+      <div class="mock-nav">
+        <div class="mock-logo"></div>
+        <div class="mock-nav-links">
+          <div class="mock-nav-link"></div>
+          <div class="mock-nav-link"></div>
+          <div class="mock-nav-link" style="width:44px;background:rgba(255,255,255,0.2);"></div><!-- Careers (active) -->
+          <div class="lang-toggle"><span class="active">EN</span><span class="sep">/</span><span style="opacity:0.4;">DE</span></div>
+        </div>
+        <div class="mock-nav-cta"></div>
+      </div>
+
+      <!-- HERO -->
+      <div class="mock-hero">
+        <div class="hero-tag">Careers at ConfigAI</div>
+        <div class="hero-title">Build the future of<br><em>AI hardware.</em></div>
+        <div class="hero-sub">We're a small team solving a hard problem: turning ML models into FPGA hardware automatically. Based in Saarbrücken, backed by Max Planck &amp; Google.</div>
+      </div>
+
+      <!-- JOB LISTINGS -->
+      <div class="jobs-section">
+        <div class="section-label">Open Positions · 3 roles</div>
+        <div class="annotation">↓ Each card has a role description + "Apply for this role" button that smoothly scrolls to the form below</div>
+        <div class="jobs-grid">
+
+          <!-- Compiler Engineer -->
+          <div class="job-card">
+            <div class="job-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div class="job-title">Compiler Engineer</div>
+            <div class="job-meta">
+              <div class="job-meta-item"><div class="job-meta-dot"></div>15 hrs / week</div>
+              <div class="job-meta-item"><div class="job-meta-dot"></div>On-site · Saarbrücken</div>
+              <div class="job-meta-item"><div class="job-meta-dot"></div>Part-time · m/w/d</div>
+            </div>
+            <div class="job-desc">Work on the compiler pipeline that maps ML computation graphs to FPGA primitives: parsing, IR transformations and code generation.</div>
+            <div class="job-apply-btn">Apply for this role ↓</div>
+          </div>
+
+          <!-- ML Engineer -->
+          <div class="job-card">
+            <div class="job-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            </div>
+            <div class="job-title">ML Engineer</div>
+            <div class="job-meta">
+              <div class="job-meta-item"><div class="job-meta-dot"></div>15 hrs / week</div>
+              <div class="job-meta-item"><div class="job-meta-dot"></div>On-site · Saarbrücken</div>
+              <div class="job-meta-item"><div class="job-meta-dot"></div>Part-time · m/w/d</div>
+            </div>
+            <div class="job-desc">Bridge the gap between ML model architectures and hardware constraints: quantisation, operator fusion and hardware-aware model optimisation.</div>
+            <div class="job-apply-btn">Apply for this role ↓</div>
+          </div>
+
+          <!-- HDL Engineer -->
+          <div class="job-card">
+            <div class="job-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+            <div class="job-title">HDL Engineer</div>
+            <div class="job-meta">
+              <div class="job-meta-item"><div class="job-meta-dot"></div>15 hrs / week</div>
+              <div class="job-meta-item"><div class="job-meta-dot"></div>On-site · Saarbrücken</div>
+              <div class="job-meta-item"><div class="job-meta-dot"></div>Part-time · m/w/d</div>
+            </div>
+            <div class="job-desc">Design and optimise the hardware description language templates and RTL modules that the compiler emits. Verilog/VHDL expertise required.</div>
+            <div class="job-apply-btn">Apply for this role ↓</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SCROLL ANCHOR -->
+      <div class="scroll-anchor-label">
+        <div class="scroll-anchor-line"></div>
+        <span>APPLICATION FORM</span>
+        <div class="scroll-anchor-line"></div>
+      </div>
+
+      <!-- APPLICATION FORM -->
+      <div class="form-section">
+        <div class="form-header">
+          <div class="form-title">Apply for a role</div>
+          <div class="form-subtitle">Clicking "Apply for this role" above pre-selects the role below. All fields marked required.</div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <div class="field-label">Full Name *</div>
+            <div class="mock-input"></div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">Email *</div>
+            <div class="mock-input"></div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">Role *</div>
+            <div class="mock-select">Compiler Engineer ▾</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">LinkedIn Profile</div>
+            <div class="mock-input"></div>
+          </div>
+        </div>
+
+        <div class="upload-zones">
+          <div class="upload-zone required">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="upload-zone-title">CV / Résumé</div>
+            <div class="upload-zone-sub">PDF, DOC · max 10MB</div>
+            <div class="upload-badge req">REQUIRED</div>
+          </div>
+          <div class="upload-zone required">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <div class="upload-zone-title">Cover Letter</div>
+            <div class="upload-zone-sub">PDF, DOC · max 10MB</div>
+            <div class="upload-badge req">REQUIRED</div>
+          </div>
+          <div class="upload-zone">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="upload-zone-title">Additional Docs</div>
+            <div class="upload-zone-sub">Portfolio, transcripts · max 20MB</div>
+            <div class="upload-badge">OPTIONAL</div>
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <div class="mock-submit">Submit Application</div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="mock-footer">
+        <div class="mock-footer-logo"></div>
+        <div class="mock-footer-links">
+          <div class="mock-footer-link"></div>
+          <div class="mock-footer-link"></div>
+          <div class="mock-footer-link" style="width:48px;background:rgba(255,255,255,0.15);"></div><!-- Careers active -->
+          <div class="mock-footer-link"></div>
+        </div>
+      </div>
+
+    </div><!-- /page-preview -->
+
+    <!-- SYSTEM DIAGRAM -->
+    <div class="outer" style="margin-top:32px;">
+      <h3>Data + email flow (Approach C)</h3>
+    </div>
+    <div style="max-width:860px;margin:0 auto;background:rgba(13,18,31,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px 28px;">
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;row-gap:12px;">
+
+        <div style="text-align:center;min-width:100px;">
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;">Browser (JS)</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">careers.html</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+          <div style="font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:0.08em;">① upload files</div>
+          <div style="height:1px;width:100%;background:rgba(255,255,255,0.12);position:relative;">
+            <div style="position:absolute;right:-4px;top:-4px;color:rgba(255,255,255,0.3);font-size:10px;">▶</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;min-width:120px;">
+          <div style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:10px 14px;font-size:11px;color:rgba(147,197,253,0.9);font-weight:600;">Supabase Storage</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">applications/ bucket</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+          <div style="font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:0.08em;">② POST metadata + paths</div>
+          <div style="height:1px;width:100%;background:rgba(255,255,255,0.12);position:relative;">
+            <div style="position:absolute;right:-4px;top:-4px;color:rgba(255,255,255,0.3);font-size:10px;">▶</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;min-width:140px;">
+          <div style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.25);border-radius:8px;padding:10px 14px;font-size:11px;color:rgba(216,180,254,0.9);font-weight:600;">notify-application</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">Supabase Edge Function</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+          <div style="font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:0.08em;">③ insert row</div>
+          <div style="height:1px;width:100%;background:rgba(255,255,255,0.12);position:relative;">
+            <div style="position:absolute;right:-4px;top:-4px;color:rgba(255,255,255,0.3);font-size:10px;">▶</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;min-width:120px;">
+          <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 14px;font-size:11px;color:rgba(134,239,172,0.9);font-weight:600;">applicants table</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">Supabase DB</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <div style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:rgba(216,180,254,0.6);text-transform:uppercase;margin-bottom:8px;">Edge fn also sends 2 emails via Resend</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);line-height:1.7;">
+            📬 <strong style="color:rgba(255,255,255,0.85);">To you:</strong> "New application: [Name] for [Role]" with all submitted details<br>
+            ✉️ <strong style="color:rgba(255,255,255,0.85);">To applicant:</strong> "We received your application" confirmation
+          </div>
+        </div>
+        <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:rgba(134,239,172,0.6);text-transform:uppercase;margin-bottom:8px;">applicants table schema</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);font-family:monospace;line-height:1.8;">
+            id · name · email · role<br>
+            linkedin_url · cv_path<br>
+            cover_letter_path<br>
+            additional_paths[] · created_at
+          </div>
+        </div>
+        <div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:rgba(147,197,253,0.6);text-transform:uppercase;margin-bottom:8px;">Storage bucket structure</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);font-family:monospace;line-height:1.8;">
+            applications/<br>
+            &nbsp;&nbsp;{role}/{applicant_id}/<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cv.pdf<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cover-letter.pdf<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;additional/...
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
