@@ -96,22 +96,20 @@
     </p>
   </section>
 
-  <!-- ── Language Toggle ── -->
-  <div class="relative z-[1] flex justify-center pb-2" style="margin-top:-8px;">
-    <div class="flex items-center text-xs font-semibold"
-         style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:3px;gap:2px;">
-      <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
-        class="px-3 py-1 rounded transition-all">EN</button>
-      <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
-        class="px-3 py-1 rounded transition-all">DE</button>
-    </div>
-  </div>
-
   <!-- ── Job Cards ── -->
   <section class="relative z-[1] px-6 pb-24">
     <div class="max-w-5xl mx-auto">
-      <p class="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-6"
-         data-en="Open Positions · 3 roles" data-de="Offene Stellen · 3 Rollen">Open Positions · 3 roles</p>
+      <div class="flex items-center justify-between mb-6">
+        <p class="text-xs uppercase tracking-[0.16em] text-zinc-500"
+           data-en="Open Positions · 3 roles" data-de="Offene Stellen · 3 Rollen">Open Positions · 3 roles</p>
+        <div class="flex items-center text-xs font-semibold"
+             style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:3px;gap:2px;">
+          <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
+            class="px-3 py-1 rounded transition-all">EN</button>
+          <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
+            class="px-3 py-1 rounded transition-all">DE</button>
+        </div>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
         <!-- Card: Compiler Engineer -->
