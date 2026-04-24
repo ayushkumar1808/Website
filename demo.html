@@ -243,8 +243,17 @@
       <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Challenge</a>
       <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Platform</a>
       <a href="index.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Waitlist</a>
+      <a href="careers.html" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Careers</a>
     </div>
     <div class="hidden md:flex items-center gap-3">
+      <div class="flex items-center gap-1 text-xs font-semibold mr-1">
+        <button id="lang-btn-en" onclick="applyLang('en')" data-active="true"
+          class="px-2 py-1 rounded transition-colors text-white"
+          style="background:rgba(255,255,255,0.1);">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button id="lang-btn-de" onclick="applyLang('de')" data-active="false"
+          class="px-2 py-1 rounded transition-colors text-zinc-400 hover:text-white">DE</button>
+      </div>
       <a href="demo.html" class="text-sm text-white font-medium" style="border-bottom:1px solid rgba(255,255,255,0.4);">Try Demo</a>
       <a href="index.html"
         class="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap">
@@ -273,8 +282,17 @@
       <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Challenge</a>
       <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Platform</a>
       <a href="index.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Waitlist</a>
+      <a href="careers.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Careers</a>
       <div class="border-t border-white/10 my-2"></div>
       <a href="demo.html" class="text-white text-base font-normal py-[9px] hover:text-zinc-300 transition-colors">Try Demo</a>
+      <div class="flex items-center gap-2 py-[9px]">
+        <button onclick="applyLang('en'); closeMobileMenu();" data-active="true"
+          class="px-3 py-1.5 rounded text-sm font-semibold"
+          style="background:rgba(255,255,255,0.1);color:#fff;">EN</button>
+        <span class="text-zinc-600">/</span>
+        <button onclick="applyLang('de'); closeMobileMenu();" data-active="false"
+          class="px-3 py-1.5 rounded text-sm font-semibold text-zinc-400 hover:text-white">DE</button>
+      </div>
     </div>
     <div class="px-6 pt-6 pb-6">
       <a href="index.html"
@@ -385,6 +403,7 @@
         <a href="#" class="hover:text-white transition-colors">Privacy</a>
         <a href="#" class="hover:text-white transition-colors">Terms</a>
         <a href="mailto:contact@configai.co" class="hover:text-white transition-colors">Contact</a>
+        <a href="careers.html" class="hover:text-white transition-colors">Careers</a>
       </div>
       <div class="text-zinc-500 text-xs">contact@configai.co</div>
     </div>
@@ -592,6 +611,11 @@
       if (nav) { nav.style.top = Math.round(40*(1-p)) + 'px'; }
     }, { passive: true });
   </script>
+  <script src="careers.js" defer></script>
+  <style>
+    [data-active="true"] { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
+    [data-active="false"] { color: rgba(255,255,255,0.45); }
+  </style>
 
 </body>
 </html>
