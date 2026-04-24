@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=390, initial-scale=1.0">
+  <title>ConfigAI · Hiring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 390px;
+      min-height: 844px;
+      background: #050810;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+    .serif { font-family: 'Playfair Display', serif; }
+
+    .card {
+      width: 390px;
+      min-height: 844px;
+      background: #050810;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 32px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle radial glow */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -120px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(79,110,247,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(120,80,220,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .logo img { height: 26px; object-fit: contain; opacity: 0.95; }
+
+    /* headline */
+    .headline {
+      margin-bottom: 8px;
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 10px;
+    }
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 52px;
+      line-height: 1.05;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .subtitle {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+      max-width: 280px;
+      margin-bottom: 40px;
+    }
+
+    /* role pills */
+    .roles {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex: 1;
+    }
+    .role-pill {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .role-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .role-icon svg { display: block; }
+    .role-info { flex: 1; }
+    .role-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .role-meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      font-weight: 400;
+    }
+    .role-arrow {
+      color: rgba(255,255,255,0.2);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    /* divider */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      margin-bottom: 24px;
+    }
+
+    /* contact */
+    .contact {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .contact-photo {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      flex-shrink: 0;
+      filter: grayscale(15%);
+    }
+    .contact-info {}
+    .contact-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .contact-role {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+    .contact-email {
+      margin-top: 3px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* domain badge */
+    .domain {
+      position: absolute;
+      bottom: 40px; right: 32px;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- Logo -->
+    <div class="logo">
+      <img src="configai-logo.png" alt="ConfigAI">
+    </div>
+
+    <!-- Headline -->
+    <div class="headline">
+      <p class="eyebrow">We're hiring</p>
+      <h1 class="title">Join<br>ConfigAI.</h1>
+      <p class="subtitle">On-site in Saarbrücken. Part-time, 15 hrs/week. Build the future of AI hardware.</p>
+    </div>
+
+    <!-- Role Pills -->
+    <div class="roles">
+
+      <div class="role-pill">
+        <div class="role-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="role-info">
+          <div class="role-title">Compiler Engineer</div>
+          <div class="role-meta">Part-time · On-site · Saarbrücken</div>
+        </div>
+        <div class="role-arrow">›</div>
+      </div>
+
+      <div class="role-pill">
+        <div class="role-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="role-info">
+          <div class="role-title">ML Engineer</div>
+          <div class="role-meta">Part-time · On-site · Saarbrücken</div>
+        </div>
+        <div class="role-arrow">›</div>
+      </div>
+
+      <div class="role-pill">
+        <div class="role-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+            <line x1="12" y1="12" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="8" y2="16"/>
+            <line x1="16" y1="12" x2="16" y2="16"/>
+          </svg>
+        </div>
+        <div class="role-info">
+          <div class="role-title">HDL Engineer</div>
+          <div class="role-meta">Part-time · On-site · Saarbrücken</div>
+        </div>
+        <div class="role-arrow">›</div>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <!-- Contact -->
+    <div class="contact">
+      <img src="ayush.jpg" alt="Ayush Kumar" class="contact-photo">
+      <div class="contact-info">
+        <div class="contact-name">Ayush Kumar</div>
+        <div class="contact-role">Co-founder, ConfigAI</div>
+        <div class="contact-email">ayush@configai.co</div>
+      </div>
+    </div>
+
+    <!-- Domain watermark -->
+    <span class="domain">configai.co/careers</span>
+
+  </div>
+</body>
+</html>
